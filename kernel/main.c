@@ -14,10 +14,7 @@
 //
 
 #include <stdio.h>
-
-
-
-
+#include <string.h>
 
 /*======================================================================*
                             kernel_main
@@ -116,20 +113,45 @@ void TestA()
 }
 
 
+//文件系统
+//要实现的指令：
+//touch 创建空文件
+//mkdir 创建空文件夹
+//rm	删除文件
+//rmdir	删除空文件夹
+//file	查看文件
+//ls	查看当前路径下文件列表
+//cd	更改路径
+//sv	保存当前文件系统
+
 #define MAX_FILE_NAME_LEN 30
+#define MAX_FILE_CONTENT_LEN 50
+#define MAX_CHILDREN_NUM 10
 
 #define SYS_DATA_FILE_NAME "dataFile"
-
 
 //文件ID  文件名  文件类型（-1为空、0为文件夹、1为文件）  父节点ID  
 //0 孩子数  孩子ID数组
 //1 文本字符串
 struct FCB {
+	int type;
+	int FCBID;
+	int fatherID;
+	char FCBName[MAX_FILE_NAME_LEN];
 
+	char content[MAX_FILE_CONTENT_LEN];
 
-
+	int childrenNum;
+	int children[MAX_CHILDREN_NUM];
 };
 
+int nextID
+*FCB currentDir;
+
+int NewFCB()
+{
+
+}
 
 //从虚拟硬盘中加载初始文件系统
 void FMInit()
@@ -201,18 +223,6 @@ void CommandWrong()
 {
 
 }
-
-//文件系统
-//要实现的指令：
-//touch 创建空文件
-//mkdir 创建空文件夹
-//rm	删除文件
-//rmdir	删除空文件夹
-//file	查看文件
-//ls	查看当前路径下文件列表
-//cd	更改路径
-//sv	保存当前文件系统
-
 char currentCmd[128];
 
 void TestB()
