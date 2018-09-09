@@ -1,6 +1,7 @@
 {
   "ExpandedNodes": [
     "",
+    "\\include",
     "\\kernel"
   ],
   "SelectedNode": "\\kernel\\main.c",
