@@ -10,6 +10,70 @@
 #include "global.h"
 #include "proto.h"
 
+#define MAX_COMMAND_LEN 128
+
+////////////////////////////////BasicFunctions/////////////////////////////
+
+//清屏
+void clear()
+{
+	clear_screen(0, console_table[current_console].cursor);
+	console_table[current_console].crtc_start = 0;
+	console_table[current_console].cursor = 0;
+
+}
+
+//指令列表
+void help()
+{
+	clear();
+
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+	printf(" ==                                                                            \n");
+	printf(" ==                        <-  Command List  ->                                \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==              1. help	       ----     Show Help                          \n");
+	printf(" ==              2. Carlendar      ----     Start Carlendar                    \n");
+	printf(" ==              3. Calculator     ----     Start Calculator                   \n");
+	printf(" ==              4. Game1          ----     Play Finger Guessing               \n");
+	printf(" ==              5. Game2          ----     Play GoBang                        \n");
+	printf(" ==              6. Game3          ----     Play MineSweeper                   \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+
+}
+
+void startAnimate() {
+	long int ii = 9999;
+	printf("System is loading...");
+
+	while (ii-->0); ii = 2999999;
+	printf("................");
+	while (ii-->0); ii = 2999999;
+	printf("......");
+	while (ii-->0); ii = 999999;
+	printf("..");
+	while (ii-->0); ii = 6999999;
+	printf("..............................");
+	while (ii-->0); ii = 9999;
+	printf("......");
+	while (ii-->0); ii = 999999;
+	printf("..");
+	while (ii-->0); ii = 9999;
+	printf("..");
+	while (ii-->0); ii = 999;
+	printf(".......");
+}
+
+
+
+/////////////////////////APPLICATION///////////////////////////////////
+
 //////////////////////////Carlendar////////////////////////////////////
 
 int year, month, day;
@@ -51,23 +115,23 @@ int show_week(int year, int month, int day)
 
 void print_year_month(int fd_stdin)
 {
-	char rdbuf[128];
+	char inputCmd[MAX_COMMAND_LEN];
 	int k, x, first_week;
 	int r = 0;
 	printf("Please input the year:");
 
-	r = read(fd_stdin, rdbuf, 70);
-	rdbuf[r] = 0;
-	atoi(rdbuf, &year);
+	r = read(fd_stdin, inputCmd, 70);
+	inputCmd[r] = 0;
+	atoi(inputCmd, &year);
 
 	month = 1;
 	do
 	{
 		clear();
 		/*printf("Please input the month: ");
-		r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		atoi(rdbuf, &month);
+		r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		atoi(inputCmd, &month);
 		if (month<1 || month>12)
 		{
 		printf("The month you input is wrong, please input again!\n");
@@ -128,7 +192,7 @@ void print_year_month(int fd_stdin)
 
 		printf("\n");
 		printf("=========================================================\n");
-		printf("                   Festivals Of THis Month               \n");
+		printf("                   Festivals Of This Month               \n");
 		printf("=========================================================\n");
 		switch (month)
 		{
@@ -170,9 +234,9 @@ void print_year_month(int fd_stdin)
 		printf("\n\n");
 		printf("Choose the number of options: 1.Next Month    2.Last Month    3.Exit Calendar\n");
 		int option = 0;
-		r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		atoi(rdbuf, &option);
+		r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		atoi(inputCmd, &option);
 		if (option == 1)
 		{
 			month++;
@@ -200,25 +264,25 @@ void print_year_month(int fd_stdin)
 
 void print(int year, int month, int day, int fd_stdin)
 {
-	char rdbuf[128];
+	char inputCmd[MAX_COMMAND_LEN];
 	int r = 0;
 	int week;
 	printf("Please input the year:");
 	do
 	{
-		r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		atoi(rdbuf, &year);
+		r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		atoi(inputCmd, &year);
 
 		printf("Please input the month:");
-		r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		atoi(rdbuf, &month);
+		r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		atoi(inputCmd, &month);
 
 		printf("Please input the day:");
-		r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		atoi(rdbuf, &day);
+		r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		atoi(inputCmd, &day);
 		//scanf("%d %d %d", &year, &month, &day);
 		if (judgement(year))
 		{
@@ -303,7 +367,7 @@ void print(int year, int month, int day, int fd_stdin)
 
 void Carlendar(int fd_stdin, int fd_stdout)
 {
-	char rdbuf[128];
+	char inputCmd[MAX_COMMAND_LEN];
 	int r = 0;
 	int choice, year = 1000, month = 0, day = 0, flag = 1;
 	char c, k;
@@ -314,7 +378,7 @@ void Carlendar(int fd_stdin, int fd_stdout)
 		printf("|| |        / \\    |     |     |\\   | |   \\ |     |   | ||\n");
 		printf("|| |       /   \\   |     |____ | \\  | |   | |____ |___| ||\n");
 		printf("|| |      /_____\\  |     |     |  \\ | |   | |     | \\   ||\n");
-		printf("|| |____ /       \\ |____ |____ |   \\| |___/ |____ |   \\  ||\n");
+		printf("|| |____ /       \\ |____ |____ |   \\| |___/ |____ |   \\ ||\n");
 		printf("||                                                      ||\n");
 		printf("||                                                      ||\n");
 		printf("||                    1.Use Calendar                    ||\n");
@@ -328,9 +392,9 @@ void Carlendar(int fd_stdin, int fd_stdout)
 		{
 			if (flag)
 			{
-				r = read(fd_stdin, rdbuf, 70);
-				rdbuf[r] = 0;
-				if (strcmp(rdbuf, "clear") == 0 || strcmp(rdbuf, "Clear") == 0)
+				r = read(fd_stdin, inputCmd, 70);
+				inputCmd[r] = 0;
+				if (strcmp(inputCmd, "clear") == 0 || strcmp(inputCmd, "Clear") == 0)
 				{
 					clear();
 
@@ -339,7 +403,7 @@ void Carlendar(int fd_stdin, int fd_stdout)
 					printf("|| |        / \\    |     |     |\\   | |   \\ |     |   | ||\n");
 					printf("|| |       /   \\   |     |____ | \\  | |   | |____ |___| ||\n");
 					printf("|| |      /_____\\  |     |     |  \\ | |   | |     | \\   ||\n");
-					printf("|| |____ /       \\ |____ |____ |   \\| |___/ |____ |   \\  ||\n");
+					printf("|| |____ /       \\ |____ |____ |   \\| |___/ |____ |   \\ ||\n");
 					printf("||                                                      ||\n");
 					printf("||                                                      ||\n");
 					printf("||                    1.Use Calendar                    ||\n");
@@ -352,15 +416,15 @@ void Carlendar(int fd_stdin, int fd_stdout)
 					printf("Please input your choose:   ");
 					continue;
 				}
-				c = rdbuf[0];
+				c = inputCmd[0];
 				printf("\n");
 				printf("Are you sure choose %c? (y/Y)or(n/N):   ", c);
 			}
 			if (flag)
 			{
-				r = read(fd_stdin, rdbuf, 70);
-				rdbuf[r] = 0;
-				k = rdbuf[0];
+				r = read(fd_stdin, inputCmd, 70);
+				inputCmd[r] = 0;
+				k = inputCmd[0];
 			}
 			if (k == 'y' || k == 'Y')
 			{
@@ -395,9 +459,9 @@ void Carlendar(int fd_stdin, int fd_stdout)
 				flag = 0;
 				if (flag == 0)
 				{
-					r = read(fd_stdin, rdbuf, 70);
-					rdbuf[r] = 0;
-					k = rdbuf[0];
+					r = read(fd_stdin, inputCmd, 70);
+					inputCmd[r] = 0;
+					k = inputCmd[0];
 					printf("\n");
 					//getchar();
 				}
@@ -543,6 +607,56 @@ double Transfer() {
 	return temp;
 }
 
+void Calculator(fd_stdin,fd_stdout) {
+	clear();
+
+	printf("==========================================================================\n");
+	printf("|  ____     _           ____                 _    ______  ____   _____   |\n");
+	printf("| |        / \\    |    |     |    | |       / \\      |   |    | |     |  |\n");
+	printf("| |       /   \\   |    |     |    | |      /   \\     |   |    | |_____|  |\n");
+	printf("| |      /_____\\  |    |     |    | |     /_____\\    |   |    | |  \\    |\n");
+	printf("| |____ /       \\ |___ |____ |____| |___ /       \\   |   |____| |   \\   |\n");
+	printf("|________________________________________________________________________|\n");
+	printf("|                                                                        |\n");
+	printf("|                 Input your formula                                     |\n");
+	printf("|                                                                        |\n");
+	printf("|                    For example: 5+2                                    |\n");
+	printf("==========================================================================\n");
+	printf("\n");
+
+	while (1) {
+		for (int i = 0; i < FORMULA_LENGTH_; i++) {
+			Input[i] = '\0';
+			formula[i] = '\0';
+		}
+		token = 0;
+		int r = read(fd_stdin, Input, FORMULA_LENGTH_);
+		Input[r] = 0;
+		if (strcmp(Input, "q") == 0) {
+			break;
+		}
+		int test = InitFormula();
+		if (!test) {
+			printf("error!");
+			continue;
+		}
+		double result = level1();
+		if (test == 1)
+			printf("result is : %d\n", (int)result);
+		else if (test == 2) {
+			char re[5];
+			for (int i = 0; i < 5; i++) {
+				int t = 1;
+				for (int j = 0; j <= i; j++)
+					t = t * 10;
+				re[i] = (char)(result * t) % 10 + 48;
+			}
+			printf("result is : %d.%s\n", (int)result, re);
+		}
+	}
+}
+
+///////////////////////////GAME////////////////////////////////////////
 
 ///////////////////////Finger-Guessing/////////////////////////////////
 
@@ -584,12 +698,13 @@ int computer_game(int count)
 
 void Guessing(fd_stdin, fd_stdout)
 {
-	int gamer = 1;  // 玩家出拳
-	int computer = 0;  // 电脑出拳
-	int result;  // 比赛结果
+	int gamer = 1;			// 玩家出拳
+	int computer = 0;		// 电脑出拳
+	int result;				// 比赛结果
 	int count = 0;
-	// 为了避免玩一次游戏就退出程序，可以将代码放在循环中
-	char rdbuf[128];
+
+	char inputCmd[MAX_COMMAND_LEN];
+
 	int r;
 
 	printf("    *                                                                     \n");
@@ -615,9 +730,9 @@ void Guessing(fd_stdin, fd_stdout)
 		printf("Please enter your choice:\n");
 		printf("A:Scissors\nB:Stone\nC:Cloth\nD:Ending game\n");
 
-		r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		gamer = rdbuf[0];
+		r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		gamer = inputCmd[0];
 
 
 		if (gamer == 'Q' || gamer == 'q')
@@ -745,7 +860,7 @@ void gobang(fd_stdin, fd_stdout)
 	now.x = 7;
 	now.y = 7;
 
-	char rdbuf[128];
+	char inputCmd[MAX_COMMAND_LEN];
 
 	while (1)
 	{
@@ -766,18 +881,18 @@ void gobang(fd_stdin, fd_stdout)
 		printf("    *                                                                     \n");
 		printf("    *    ********************************************************         \n");
 
-		int len = read(fd_stdin, rdbuf, 70);
-		rdbuf[len] = 0;
-		com = rdbuf[0];
+		int len = read(fd_stdin, inputCmd, 70);
+		inputCmd[len] = 0;
+		com = inputCmd[0];
 
 		if (com == 'b')
 		{
 			draw_table_for_gobang(table, now);
 			while (1)
 			{
-				len = read(fd_stdin, rdbuf, 70);
-				rdbuf[len] = 0;
-				com = rdbuf[0];
+				len = read(fd_stdin, inputCmd, 70);
+				inputCmd[len] = 0;
+				com = inputCmd[0];
 
 				switch (com)
 				{
@@ -980,7 +1095,7 @@ void Minesweeper(fd_stdin, fd_stdout)
 	now.x = 0;
 	now.y = 0;
 
-	char rdbuf[128];
+	char inputCmd[MAX_COMMAND_LEN];
 
 	while (1)
 	{
@@ -1002,9 +1117,9 @@ void Minesweeper(fd_stdin, fd_stdout)
 		printf("    *                                                                     \n");
 		printf("    *    ********************************************************         \n");
 		
-		int len = read(fd_stdin, rdbuf, 70);
-		rdbuf[len] = 0;
-		com = rdbuf[0];
+		int len = read(fd_stdin, inputCmd, 70);
+		inputCmd[len] = 0;
+		com = inputCmd[0];
 
 		if (com == 'b')
 		{
@@ -1047,9 +1162,9 @@ void Minesweeper(fd_stdin, fd_stdout)
 			draw_table(table, now);
 			while (1)
 			{
-				len = read(fd_stdin, rdbuf, 70);
-				rdbuf[len] = 0;
-				com = rdbuf[0];
+				len = read(fd_stdin, inputCmd, 70);
+				inputCmd[len] = 0;
+				com = inputCmd[0];
 
 				switch (com)
 				{
@@ -1232,15 +1347,307 @@ PUBLIC int get_ticks()
 	return msg.RETVAL;
 }
 
+void ShowCommands()
+{
+	clear();
 
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+	printf(" ==                                                                            \n");
+	printf(" ==                        <-  Command List  ->                                \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==              1. help	       ----     Show Help                          \n");
+	printf(" ==              2. Carlendar      ----     Start Carlendar                    \n");
+	printf(" ==              3. Calculator     ----     Start Calculator                   \n");
+	printf(" ==              4. Game1          ----     Play Finger Guessing               \n");
+	printf(" ==              5. Game2          ----     Play GoBang                        \n");
+	printf(" ==              6. Game3          ----     Play MineSweeper                   \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+}
 
 ////////////////////////TestA////////////////////////////////////
+/////////////////////applications////////////////////////////////
 
+
+void TestA()
+{
+	char tty_name[] = "/dev_tty0";
+
+	int fd;
+	int i, n;
+	char cmd[8];
+	char buf[1024];
+	char filename[120];
+
+	char inputCmd[MAX_COMMAND_LEN];
+
+	long int ii = 9999;
+
+	printf("                                                                           \n"); while (ii-->0); ii = 9999;
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("      ###            ###            ###            ###            ###      \n");
+	printf("     #...#          #...#          #...#          #...#          #...#     \n");
+	printf("     #.#.#          #.#.#          #.#.#          #.#.#          #.#.#     \n");
+	printf("     #.#.#          #.#.#          #.#.#          #.#.#          #.#.#     \n");
+	printf("     #...#          #...#          #...#          #...#          #...#     \n");
+	printf("      ###            ###            ###            ###            ###      \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(1500);
+	clear();
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("  ********                                                                 \n");
+	printf(" ************                                                              \n");
+	printf(" ####....#.                                                                \n");
+	printf("..###.....##....                                                           \n");
+	printf("##.......######      ###            ###            ###            ###      \n");
+	printf("  ...........       #...#          #...#          #...#          #...#     \n");
+	printf(" ##*#######         #.#.#          #.#.#          #.#.#          #.#.#     \n");
+	printf("##*******######     #.#.#          #.#.#          #.#.#          #.#.#     \n");
+	printf("#***.****.*###....  #...#          #...#          #...#          #...#     \n");
+	printf(".**********##.....   ###            ###            ###            ###      \n");
+	printf(".****    *****....                                                         \n");
+	printf("###        ####                                                            \n");
+	printf("####        ######                                                         \n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(1500);
+	clear();
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                ********                                                   \n");
+	printf("                ************                                               \n");
+	printf("  ###     ###   ####....#.                                                 \n");
+	printf("  ###     #   #..###.....##....                                            \n");
+	printf("  ###     ##  ###.......######     ###            ###            ###       \n");
+	printf("  ###     ##     ...........      #...#          #...#          #...#      \n");
+	printf("  ##########    ##*#######        #.#.#          #.#.#          #.#.#      \n");
+	printf("  #########  ####*******######    #.#.#          #.#.#          #.#.#      \n");
+	printf("  ###       ...#***.****.*###.... #...#          #...#          #...#      \n");
+	printf("  ###       ....**********##.....  ###            ###            ###       \n");
+	printf("  ###       ....****    *****....                                          \n");
+	printf("  ###         ####        ####                                             \n");
+	printf("            ######        ######                                           \n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(1500);
+	clear();
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                               ********                                    \n");
+	printf("                               ************                                \n");
+	printf("  ###     ###     #########    ####....#.                                  \n");
+	printf("  ###     ###    ##########  #..###.....##....                             \n");
+	printf("  ###     ###    ###     ##  ###.......######     ###             ###      \n");
+	printf("  ###     ###    ###     ###    ...........      #...#           #...#     \n");
+	printf("  ###########    ##########    ##*#######        #.#.#           #.#.#     \n");
+	printf("  ###########    #########  ####*******######    #.#.#           #.#.#     \n");
+	printf("  ###     ###    ###       ...#***.****.*###.... #...#           #...#     \n");
+	printf("  ###     ###    ###       ....**********##.....  ###             ###      \n");
+	printf("  ###     ###    ########  ....****    *****....                           \n");
+	printf("  ###     ###     ########   ####        ####                              \n");
+	printf("                           ######        ######                           \n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(1500);
+	clear();
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                              ********                     \n");
+	printf("                                              ************                 \n");
+	printf("  ###     ###     #########     ###           ####....#.                   \n");
+	printf("  ###     ###    ###########    ###         #..###.....##....              \n");
+	printf("  ###     ###    ###     ###    ###         ###.......######       ###     \n");
+	printf("  ###     ###    ###     ###    ###            ...........        #...#    \n");
+	printf("  ###########    ###########    ###           ##*#######          #.#.#    \n");
+	printf("  ###########    ###########    ###        ####*******######      #.#.#    \n");
+	printf("  ###     ###    ###            ###       ...#***.****.*###....   #...#    \n");
+	printf("  ###     ###    ###     ###    ###       ....**********##.....    ###     \n");
+	printf("  ###     ###    ###########    ########  ....****    *****....            \n");
+	printf("  ###     ###     #########     #########   ####        ####               \n");
+	printf("                                          ######        ######             \n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(1500);
+	clear();
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                             ********      \n");
+	printf("                                                             ************  \n");
+	printf("  ###     ###     #########     ###            ###           ####....#.    \n");
+	printf("  ###     ###    ###########    ###            ###         #..###.....##...\n");
+	printf("  ###     ###    ###     ###    ###            ###         ###.......######\n");
+	printf("  ###     ###    ###     ###    ###            ###            ...........  \n");
+	printf("  ###########    ###########    ###            ###           ##*#######    \n");
+	printf("  ###########    ###########    ###            ###        ####*******######\n");
+	printf("  ###     ###    ###            ###            ###       ...#***.****.*###.\n");
+	printf("  ###     ###    ###     ###    ###            ###       ....**********##..\n");
+	printf("  ###     ###    ###########    ###########    ##########....****    *****.\n");
+	printf("  ###     ###     #########     ###########    ########### ####        ####\n");
+	printf("                                                         ######        ####\n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(1500);
+	clear();
+
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("                                                                           \n");
+	printf("  ###     ###     #########     ###            ###             #########   \n");
+	printf("  ###     ###    ###########    ###            ###            ###########  \n");
+	printf("  ###     ###    ###     ###    ###            ###            ###     ###  \n");
+	printf("  ###     ###    ###     ###    ###            ###            ###     ###  \n");
+	printf("  ###########    ###########    ###            ###            ###     ###  \n");
+	printf("  ###########    ###########    ###            ###            ###     ###  \n");
+	printf("  ###     ###    ###            ###            ###            ###     ###  \n");
+	printf("  ###     ###    ###     ###    ###            ###            ###     ###  \n");
+	printf("  ###     ###    ###########    ###########    ###########    ###########  \n");
+	printf("  ###     ###     #########     ###########    ###########     #########   \n");
+	printf("                                                                           \n");
+	printf("###########################################################################\n");
+	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
+	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
+	milli_delay(2000);
+	
+	startAnimate();
+	clear();
+
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+	printf(" ==                                                                            \n");
+	printf(" ==                        <-  Command List  ->                                \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==              1. help	       ----     Show Help                          \n");
+	printf(" ==              2. Carlendar      ----     Start Carlendar                    \n");
+	printf(" ==              3. Calculator     ----     Start Calculator                   \n");
+	printf(" ==              4. Game1          ----     Play Finger Guessing               \n");
+	printf(" ==              5. Game2          ----     Play GoBang                        \n");
+	printf(" ==              6. Game3          ----     Play MineSweeper                   \n");
+	printf(" ==              7. Clear                                                      \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+
+	int fd_stdin = open(tty_name, O_RDWR);
+	assert(fd_stdin == 0);
+	int fd_stdout = open(tty_name, O_RDWR);
+	assert(fd_stdout == 1);
+
+
+	while (1) {
+		printf("\n\n\n command:");
+
+		int r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
+		
+		if (strcmp(inputCmd, "Help") == 0 || strcmp(inputCmd, "help") == 0)
+		{
+			help();
+		}
+
+		else if (strcmp(inputCmd, "Carlendar") == 0 || strcmp(inputCmd, "carlendar") == 0)
+		{
+			clear();
+			Carlendar(fd_stdin, fd_stdout);
+		}
+
+		else if (strcmp(inputCmd, "Calculator") == 0 || strcmp(inputCmd, "calculator") == 0)
+		{
+			Calculator(fd_stdin, fd_stdout);
+		}
+
+		else if (strcmp(inputCmd, "G1") == 0)
+		{
+			Guessing(fd_stdin, fd_stdout);
+		}
+
+		else if (strcmp(inputCmd, "G2") == 0)
+		{
+			gobang(fd_stdin, fd_stdout);
+		}
+
+		else if (strcmp(inputCmd, "G3") == 0)
+		{
+			Minesweeper(fd_stdin, fd_stdout);
+		}
+
+		else if (strcmp(inputCmd, "Clear") == 0)
+		{
+			clear();
+
+			ShowCommands();
+
+		}
+
+		else
+		{
+			printf(" ==============================================================================\n");
+			printf(" ==============================================================================\n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==              <-  Wrong Command!                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==              <-  Enter: help for Commands List                             \n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==                                                                            \n");
+			printf(" ==============================================================================\n");
+			printf(" ==============================================================================\n");
+		}
+
+	}
+
+}
+
+
+////////////////////////TestB////////////////////////////////////
+//////////////////////FileManage/////////////////////////////////
+
+#define MAX_FILE_NUM 100
+#define MAX_CONTENT_LEN 50
 #define MAX_ARRAY_NUM 1000 
 #define MAX_FILE_PER_LAYER 10
 #define MAX_FILE_NAME_LENGTH 20
-#define MAX_CONTENT_ 50
-#define MAX_FILE_NUM 100
 
 //文件ID计数器
 int fileIDCount = 0;
@@ -1248,13 +1655,15 @@ int currentFileID = 0;
 
 struct fileBlock {
 	int fileID;
-	char fileName[MAX_FILE_NAME_LENGTH];
-	int fileType; //0 for txt, 1 for folder
-	char content[MAX_CONTENT_];
+	int fileType;  //0 - 文本文件 , 1 - 文件夹
 	int fatherID;
-	int children[MAX_FILE_PER_LAYER];
 	int childrenNumber;
+	int children[MAX_FILE_PER_LAYER];
+
+	char content[MAX_CONTENT_LEN];
+	char fileName[MAX_FILE_NAME_LENGTH];
 };
+
 struct fileBlock blocks[MAX_FILE_NUM];
 int IDLog[MAX_FILE_NUM];
 
@@ -1265,6 +1674,7 @@ void initFileBlock(int fileID, char * fileName, int fileType) {
 	blocks[fileID].fatherID = currentFileID;
 	blocks[fileID].childrenNumber = 0;
 }
+
 void toStr3(char * temp, int i) {
 	if (i / 100 < 0)
 		temp[0] = (char)48;
@@ -1330,10 +1740,12 @@ void WriteDisk(int len) {
 	}
 	int fd = 0;
 	int n1 = 0;
+
 	fd = open("ss", O_RDWR);
 	assert(fd != -1);
 	n1 = write(fd, temp, strlen(temp));
 	assert(n1 == strlen(temp));
+
 	close(fd);
 }
 
@@ -1373,7 +1785,7 @@ int ReadDisk() {
 		r++;
 		blocks[ID].fileType = (int)bufr[r] - 48;
 		r = r + 2;
-		for (int j = 0; j < MAX_CONTENT_; j++) {
+		for (int j = 0; j < MAX_CONTENT_LEN; j++) {
 			if (bufr[r] == '^')
 				break;
 			else if (bufr[r] == (char)1)
@@ -1414,7 +1826,7 @@ void FSInit() {
 	fileIDCount = 1;
 }
 
-int CreateFIle(char * fileName, int fileType) {
+int CreateFile(char * fileName, int fileType) {
 	if (blocks[currentFileID].childrenNumber == MAX_FILE_PER_LAYER) {
 		printf("Sorry you cannot add more files in this layer");
 		return 0;
@@ -1480,7 +1892,7 @@ void DeleteFile(int ID) {
 	IDLog[ID] = 0;
 	blocks[ID].fileID = -2;
 	blocks[ID].childrenNumber = 0;
-	for (int i = 0; i < MAX_CONTENT_; i++)
+	for (int i = 0; i < MAX_CONTENT_LEN; i++)
 		blocks[ID].content[i] = '\0';
 	for (int i = 0; i < MAX_FILE_NAME_LENGTH; i++)
 		blocks[ID].fileName[i] = '\0';
@@ -1491,360 +1903,38 @@ void DeleteFile(int ID) {
 	fileIDCount--;
 }
 
+
 void ShowMessage() {
-	printf("    *    ********************************************************         \n");
-	printf("    *                    PIGGY OS's File Manager                          \n");
-	printf("    *              touch ------ create a new text file                    \n");
-	printf("    *              mkdir ------ create a new folder                       \n");
-	printf("    *              ls --------- show the files of this level              \n");
-	printf("    *              cd --------- open a folder                             \n");
-	printf("    *              cd .. ------ return to the superior level              \n");
-	printf("    *              rm --------- delete a file/folder                      \n");
-	printf("    *              sv --------- save changes                              \n");
-	printf("    *              help ------- Instruction prompt                        \n");
-	printf("    *    ********************************************************         \n");
-}
-
-void TestA()
-{
-	int fd;
-	int i, n;
-	char cmd[8];
-	char filename[120];
-	char buf[1024];
-
-	char tty_name[] = "/dev_tty0";
-
-
-	int fd_stdin = open(tty_name, O_RDWR);
-	assert(fd_stdin == 0);
-	int fd_stdout = open(tty_name, O_RDWR);
-	assert(fd_stdout == 1);
-
-	clear();
-	long int ii = 9999;
-
-	printf("                                                                           \n"); while (ii-->0); ii = 9999;
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("      ###            ###            ###            ###            ###      \n");
-	printf("     #...#          #...#          #...#          #...#          #...#     \n");
-	printf("     #.#.#          #.#.#          #.#.#          #.#.#          #.#.#     \n");
-	printf("     #.#.#          #.#.#          #.#.#          #.#.#          #.#.#     \n");
-	printf("     #...#          #...#          #...#          #...#          #...#     \n");
-	printf("      ###            ###            ###            ###            ###      \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1000);
-	clear();
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("  ********                                                                 \n");
-	printf(" ************                                                              \n");
-	printf(" ####....#.                                                                \n");
-	printf("..###.....##....                                                           \n");
-	printf("##.......######      ###            ###            ###            ###      \n");
-	printf("  ...........       #...#          #...#          #...#          #...#     \n");
-	printf(" ##*#######         #.#.#          #.#.#          #.#.#          #.#.#     \n");
-	printf("##*******######     #.#.#          #.#.#          #.#.#          #.#.#     \n");
-	printf("#***.****.*###....  #...#          #...#          #...#          #...#     \n");
-	printf(".**********##.....   ###            ###            ###            ###      \n");
-	printf(".****    *****....                                                         \n");
-	printf("###        ####                                                            \n");
-	printf("####        ######                                                         \n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1000);
-	clear();
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                ********                                                   \n");
-	printf("                ************                                               \n");
-	printf("  ###     ###   ####....#.                                                 \n");
-	printf("  ###     #   #..###.....##....                                            \n");
-	printf("  ###     ##  ###.......######     ###            ###            ###       \n");
-	printf("  ###     ##     ...........      #...#          #...#          #...#      \n");
-	printf("  ##########    ##*#######        #.#.#          #.#.#          #.#.#      \n");
-	printf("  #########  ####*******######    #.#.#          #.#.#          #.#.#      \n");
-	printf("  ###       ...#***.****.*###.... #...#          #...#          #...#      \n");
-	printf("  ###       ....**********##.....  ###            ###            ###       \n");
-	printf("  ###       ....****    *****....                                          \n");
-	printf("  ###         ####        ####                                             \n");
-	printf("            ######        ######                                           \n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1000);
-	clear();
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                               ********                                    \n");
-	printf("                               ************                                \n");
-	printf("  ###     ###     #########    ####....#.                                  \n");
-	printf("  ###     ###    ##########  #..###.....##....                             \n");
-	printf("  ###     ###    ###     ##  ###.......######     ###             ###      \n");
-	printf("  ###     ###    ###     ###    ...........      #...#           #...#     \n");
-	printf("  ###########    ##########    ##*#######        #.#.#           #.#.#     \n");
-	printf("  ###########    #########  ####*******######    #.#.#           #.#.#     \n");
-	printf("  ###     ###    ###       ...#***.****.*###.... #...#           #...#     \n");
-	printf("  ###     ###    ###       ....**********##.....  ###             ###      \n");
-	printf("  ###     ###    ########  ....****    *****....                           \n");
-	printf("  ###     ###     ########   ####        ####                              \n");
-	printf("                           ######        ######                           \n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1000);
-	clear();
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                              ********                     \n");
-	printf("                                              ************                 \n");
-	printf("  ###     ###     #########     ###           ####....#.                   \n");
-	printf("  ###     ###    ###########    ###         #..###.....##....              \n");
-	printf("  ###     ###    ###     ###    ###         ###.......######       ###     \n");
-	printf("  ###     ###    ###     ###    ###            ...........        #...#    \n");
-	printf("  ###########    ###########    ###           ##*#######          #.#.#    \n");
-	printf("  ###########    ###########    ###        ####*******######      #.#.#    \n");
-	printf("  ###     ###    ###            ###       ...#***.****.*###....   #...#    \n");
-	printf("  ###     ###    ###     ###    ###       ....**********##.....    ###     \n");
-	printf("  ###     ###    ###########    ########  ....****    *****....            \n");
-	printf("  ###     ###     #########     #########   ####        ####               \n");
-	printf("                                          ######        ######             \n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1000);
-	clear();
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                             ********      \n");
-	printf("                                                             ************  \n");
-	printf("  ###     ###     #########     ###            ###           ####....#.    \n");
-	printf("  ###     ###    ###########    ###            ###         #..###.....##...\n");
-	printf("  ###     ###    ###     ###    ###            ###         ###.......######\n");
-	printf("  ###     ###    ###     ###    ###            ###            ...........  \n");
-	printf("  ###########    ###########    ###            ###           ##*#######    \n");
-	printf("  ###########    ###########    ###            ###        ####*******######\n");
-	printf("  ###     ###    ###            ###            ###       ...#***.****.*###.\n");
-	printf("  ###     ###    ###     ###    ###            ###       ....**********##..\n");
-	printf("  ###     ###    ###########    ###########    ##########....****    *****.\n");
-	printf("  ###     ###     #########     ###########    ########### ####        ####\n");
-	printf("                                                         ######        ####\n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1000);
-	clear();
-
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("                                                                           \n");
-	printf("  ###     ###     #########     ###            ###             #########   \n");
-	printf("  ###     ###    ###########    ###            ###            ###########  \n");
-	printf("  ###     ###    ###     ###    ###            ###            ###     ###  \n");
-	printf("  ###     ###    ###     ###    ###            ###            ###     ###  \n");
-	printf("  ###########    ###########    ###            ###            ###     ###  \n");
-	printf("  ###########    ###########    ###            ###            ###     ###  \n");
-	printf("  ###     ###    ###            ###            ###            ###     ###  \n");
-	printf("  ###     ###    ###     ###    ###            ###            ###     ###  \n");
-	printf("  ###     ###    ###########    ###########    ###########    ###########  \n");
-	printf("  ###     ###     #########     ###########    ###########     #########   \n");
-	printf("                                                                           \n");
-	printf("###########################################################################\n");
-	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
-	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	
-	
-	startAnimate();
 
 	clear();
 
-
-	clear();
-
-	printf("    *                                                              \n");
-	printf("    *     ~~~~  ** **** **  ~~~~                                   \n");
-	printf("    *    ~~  **           **   ~~      Welcome!                    \n");
-	printf("    *   ~~  **   ^^    ^^  **   ~~     PIGGY OS                    \n");
-	printf("    *  ~~~~**     @    @    **~~~~~                                \n");
-	printf("    *      **    _______    **      by 1552535 Hu Jiaxin           \n");
-	printf("    *      **    | o o |    **      by 1552622 Wang Ning           \n");
-	printf("    *      **    ~~~~~~~    **                                     \n");
-	printf("    *       **      3      **                                      \n");
-	printf("    *        **           **                                       \n");
-	printf("    *          ***********                                         \n");
-	printf("    *                         Input [help] for more information    \n");
-	printf("    *                                                              \n");
-	printf("    *    ********************************************************  \n");
-
-	while (1) {
-		printf("\n\n\n command:");
-
-		char rdbuf[128];
-		int r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		//show();
-		if (strcmp(rdbuf, "ProcessManage") == 0 || strcmp(rdbuf, "processmanage") == 0)
-		{
-			ProcessManage();
-			continue;
-		}
-
-		else if (strcmp(rdbuf, "Help") == 0 || strcmp(rdbuf, "help") == 0)
-		{
-			help();
-		}
-
-		else if (strcmp(rdbuf, "timer") == 0)
-		{
-			timer(fd_stdin, fd_stdout);
-		}
-
-		else if (strcmp(rdbuf, "Carlendar") == 0 || strcmp(rdbuf, "carlendar") == 0)
-		{
-			clear();
-			Carlendar(fd_stdin, fd_stdout);
-		}
-
-		else if (strcmp(rdbuf, "Calculator") == 0 || strcmp(rdbuf, "calculator") == 0)
-		{
-			clear();
-			printf("    *                                                                     \n");
-			printf("    *     ~~~~  ** **** **  ~~~~                                          \n");
-			printf("    *    ~~  **           **   ~~     Welcome!                            \n");
-			printf("    *   ~~  **   ^^    ^^  **   ~~    Calculator!                         \n");
-			printf("    *  ~~~~**     @    @    **~~~~~                                       \n");
-			printf("    *      **    _______    **        RULES:                              \n");
-			printf("    *      **    | * * |    **        Use + - * / ( and )in the formula   \n");
-			printf("    *      **    ~~~~~~~    **        Enter q to quit this program        \n");
-			printf("    *       **      3      **                                             \n");
-			printf("    *        **           **                                              \n");
-			printf("    *          ***********                                                \n");
-			printf("    *                                                                     \n");
-			printf("    *                                                                     \n");
-			printf("    *    ********************************************************         \n");
-
-			while (1) {
-				for (int i = 0; i < FORMULA_LENGTH_; i++) {
-					Input[i] = '\0';
-					formula[i] = '\0';
-				}
-				token = 0;
-				int r = read(fd_stdin, Input, FORMULA_LENGTH_);
-				Input[r] = 0;
-				if (strcmp(Input, "q") == 0) {
-					break;
-				}
-				int test = InitFormula();
-				if (!test) {
-					printf("error!");
-					continue;
-				}
-				double result = level1();
-				if (test == 1)
-					printf("result is : %d\n", (int)result);
-				else if (test == 2) {
-					char re[5];
-					for (int i = 0; i < 5; i++) {
-						int t = 1;
-						for (int j = 0; j <= i; j++)
-							t = t * 10;
-						re[i] = (char)(result * t) % 10 + 48;
-					}
-					printf("result is : %d.%s\n", (int)result, re);
-				}
-			}
-		}
-
-		else if (strcmp(rdbuf, "G1") == 0)
-		{
-			Guessing(fd_stdin, fd_stdout);
-		}
-
-		else if (strcmp(rdbuf, "G2") == 0)
-		{
-			gobang(fd_stdin, fd_stdout);
-		}
-
-		else if (strcmp(rdbuf, "G3") == 0)
-		{
-			Minesweeper(fd_stdin, fd_stdout);
-		}
-
-		else if (strcmp(rdbuf, "Clear") == 0)
-		{
-			clear();
-			printf("    *                                                              \n");
-			printf("    *     ~~~~  ** **** **  ~~~~                                    \n");
-			printf("    *    ~~  **           **   ~~     Welcome!                    \n");
-			printf("    *   ~~  **   ^^    ^^  **   ~~    PIGGY OS                    \n");
-			printf("    *  ~~~~**     @    @    **~~~~~                              \n");
-			printf("    *      **    _______    **     by 1552535 Hu Jiaxin           \n");
-			printf("    *      **    | * * |    **     by 1552622 Wang Ning           \n");
-			printf("    *      **    ~~~~~~~    **                                    \n");
-			printf("    *       **      3      **                                     \n");
-			printf("    *        **           **                                       \n");
-			printf("    *          ***********                                         \n");
-			printf("    *                        Input [help] for more information    \n");
-			printf("    *                                                             \n");
-			printf("    *    ******************************************************** \n");
-
-		}
-
-		else
-		{
-			printf("    *                                                              \n");
-			printf("    *     ~~~~  ** **** **  ~~~~                                   \n");
-			printf("    *    ~~  **           **   ~~                                  \n");
-			printf("    *   ~~  **   ^^    ^^  **   ~~     Sorry!                       \n");
-			printf("    *  ~~~~**     @    @    **~~~~~    Command Not Found!           \n");
-			printf("    *      **    _______    **                                     \n");
-			printf("    *      **    | ! ! |    **         Please Check!               \n");
-			printf("    *      **    ~~~~~~~    **                                    \n");
-			printf("    *       **      3      **                                     \n");
-			printf("    *        **           **                                       \n");
-			printf("    *          ***********                                         \n");
-			printf("    *                        Input [help] for more information    \n");
-			printf("    *                                                             \n");
-			printf("    *    ******************************************************** \n");
-		}
-
-	}
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+	printf(" ==                                                                            \n");
+	printf(" ==              <-File Manage                                                 \n");
+	printf(" ==                                                                            \n");
+	printf(" ==              touch XXX	    ----     Create a new file named XXX           \n");
+	printf(" ==              mkdir XXX      ----     Start Carlendar                       \n");
+	printf(" ==              ls             ----     Show files                            \n");
+	printf(" ==              cd XXX         ----     Enter the folder named XXX            \n");
+	printf(" ==              cd ..          ----     Return to the superior level          \n");
+	printf(" ==              rm XXX         ----     Remove the file named XXX             \n");
+	printf(" ==              sv             ----     Save the system                       \n");
+	printf(" ==              help           ----     Check Commands                        \n");
+	printf(" ==                                                                            \n");
+	printf(" ==                                                                            \n");
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
 
 }
 
 
-////////////////////////TestB////////////////////////////////////
 
 void TestB()
 {
 	int i, n;
 	char tty_name[] = "/dev_tty1";
-	char rdbuf[128];
+	char inputCmd[MAX_COMMAND_LEN];
 	char _name[MAX_FILE_NAME_LENGTH];
 
 	int fd_stdin = open(tty_name, O_RDWR);
@@ -1860,50 +1950,58 @@ void TestB()
 
 	while (1) {
 		for (int i = 0; i <= 127; i++)
-			rdbuf[i] = '\0';
+			inputCmd[i] = '\0';
 		for (int i = 0; i < MAX_FILE_NAME_LENGTH; i++)
 			_name[i] = '\0';
 		printf("\n/%s:", blocks[currentFileID].fileName);
 
-		int r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
+		int r = read(fd_stdin, inputCmd, 70);
+		inputCmd[r] = 0;
 		assert(fd_stdin == 0);
 
-		if (rdbuf[0] == 't' && rdbuf[1] == 'o' && rdbuf[2] == 'u' && rdbuf[3] == 'c' && rdbuf[4] == 'h') {
-			if (rdbuf[5] != ' ') {
+		//touch
+		if (inputCmd[0] == 't' && inputCmd[1] == 'o' && inputCmd[2] == 'u' && inputCmd[3] == 'c' && inputCmd[4] == 'h') {
+			if (inputCmd[5] != ' ') {
 				printf("enter the name like this : create XXX");
 				continue;
 			}
 			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 6];
+				_name[i] = inputCmd[i + 6];
 			}
-			CreateFIle(_name, 0);
+			CreateFile(_name, 0);
 		}
-		else if (rdbuf[0] == 'm' && rdbuf[1] == 'k' && rdbuf[2] == 'd' && rdbuf[3] == 'i' && rdbuf[4] == 'r') {
-			if (rdbuf[5] != ' ') {
+
+		//mkdir
+		else if (inputCmd[0] == 'm' && inputCmd[1] == 'k' && inputCmd[2] == 'd' && inputCmd[3] == 'i' && inputCmd[4] == 'r') {
+			if (inputCmd[5] != ' ') {
 				printf("enter the name like this : mkdir XXX");
 				continue;
 			}
 			char N[MAX_FILE_NAME_LENGTH];
 			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 6];
+				_name[i] = inputCmd[i + 6];
 			}
-			CreateFIle(_name, 1);
+			CreateFile(_name, 1);
 		}
-		else if (rdbuf[0] == 'l' && rdbuf[1] == 's') {
+		
+		//ls
+		else if (inputCmd[0] == 'l' && inputCmd[1] == 's') {
 			showFileList();
 		}
-		else if (rdbuf[0] == 'c' && rdbuf[1] == 'd') {
-			if (rdbuf[2] == ' ' && rdbuf[3] == '.' && rdbuf[4] == '.') {
+
+		//cd
+		else if (inputCmd[0] == 'c' && inputCmd[1] == 'd') {
+			//cd ..
+			if (inputCmd[2] == ' ' && inputCmd[3] == '.' && inputCmd[4] == '.') {
 				ReturnFile(currentFileID);
 				continue;
 			}
-			else if (rdbuf[2] != ' ') {
+			else if (inputCmd[2] != ' ') {
 				printf("enter the name like this : mt XXX");
 				continue;
 			}
 			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 3];
+				_name[i] = inputCmd[i + 3];
 			}
 			printf("name: %s\n", _name);
 			int ID = SearchFile(_name);
@@ -1918,22 +2016,22 @@ void TestB()
 							"\nu --- update"
 							"\nd --- detail of the content"
 							"\nq --- quit\n");
-						int r = read(fd_stdin, rdbuf, 70);
-						rdbuf[r] = 0;
-						if (strcmp(rdbuf, "u") == 0) {
+						int r = read(fd_stdin, inputCmd, 70);
+						inputCmd[r] = 0;
+						if (strcmp(inputCmd, "u") == 0) {
 							printf("input the text you want to write:\n");
-							int r = read(fd_stdin, blocks[ID].content, MAX_CONTENT_);
+							int r = read(fd_stdin, blocks[ID].content, MAX_CONTENT_LEN);
 							blocks[ID].content[r] = 0;
 						}
-						else if (strcmp(rdbuf, "d") == 0) {
+						else if (strcmp(inputCmd, "d") == 0) {
 							printf("--------------------------------------------"
 								"\n%s\n-------------------------------------\n", blocks[ID].content);
 						}
-						else if (strcmp(rdbuf, "q") == 0) {
+						else if (strcmp(inputCmd, "q") == 0) {
 							printf("would you like to save the change? y/n");
-							int r = read(fd_stdin, rdbuf, 70);
-							rdbuf[r] = 0;
-							if (strcmp(rdbuf, "y") == 0) {
+							int r = read(fd_stdin, inputCmd, 70);
+							inputCmd[r] = 0;
+							if (strcmp(inputCmd, "y") == 0) {
 								printf("save changes!");
 							}
 							else {
@@ -1947,13 +2045,15 @@ void TestB()
 			else
 				printf("No such file!");
 		}
-		else if (rdbuf[0] == 'r' && rdbuf[1] == 'm') {
-			if (rdbuf[2] != ' ') {
+
+		//rm
+		else if (inputCmd[0] == 'r' && inputCmd[1] == 'm') {
+			if (inputCmd[2] != ' ') {
 				printf("enter the name like this : rm XXX");
 				continue;
 			}
 			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 3];
+				_name[i] = inputCmd[i + 3];
 			}
 			int ID = SearchFile(_name);
 			if (ID >= 0) {
@@ -1972,16 +2072,22 @@ void TestB()
 			else
 				printf("No such file!\n");
 		}
-		else if (rdbuf[0] == 's' && rdbuf[1] == 'v') {
+
+		//sv
+		else if (inputCmd[0] == 's' && inputCmd[1] == 'v') {
 			WriteDisk(1000);
 		}
-		else if (strcmp(rdbuf, "help") == 0) {
+
+		//help
+		else if (strcmp(inputCmd, "help") == 0) {
 			printf("\n\n");
 			ShowMessage();
 			printf("\n\n");
 		}
+
+		//Wrong Command
 		else {
-			printf("Wrong instruction!");
+			printf("Wrong Command! Please check your input");
 		}
 	}
 
@@ -1996,45 +2102,6 @@ void TestC()
 	spin("TestC");
 }
 
-void timer(int fd_stdin, int fd_stdout)
-{
-	printf("How many seconds do you want to set?\n");
-	char rdbuf[128];
-	int tmp = 0;
-	int r = read(fd_stdin, rdbuf, 70);
-	rdbuf[r] = 0;
-	atoi(rdbuf, &tmp);
-
-	int i = tmp;
-	printf("the time you set is %d\nNow begin....\n", tmp);
-	for (; i >= 0; i--) {
-		printf("%d left\n", i);
-		milli_delay(10000);
-	}
-	printf("Time up!");
-}
-
-void startAnimate() {
-	long int ii = 9999;
-	printf("System is loading...");
-
-	while (ii-->0); ii = 2999999;
-	printf("................");
-	while (ii-->0); ii = 2999999;
-	printf("......");
-	while (ii-->0); ii = 999999;
-	printf("..");
-	while (ii-->0); ii = 6999999;
-	printf("..............................");
-	while (ii-->0); ii = 9999;
-	printf("......");
-	while (ii-->0); ii = 999999;
-	printf("..");
-	while (ii-->0); ii = 9999;
-	printf("..");
-	while (ii-->0); ii = 999;
-	printf(".......");
-}
 
 /*****************************************************************************
 *                                panic
@@ -2055,75 +2122,5 @@ PUBLIC void panic(const char *fmt, ...)
 	__asm__ __volatile__("ud2");
 }
 
-void clear()
-{
-	clear_screen(0, console_table[current_console].cursor);
-	console_table[current_console].crtc_start = 0;
-	console_table[current_console].cursor = 0;
-
-}
-
-
-void help()
-{
-	printf(" *                                                                          \n");
-	printf(" *     ~~~~  ** **** **  ~~~~                  Welcome!                     \n");
-	printf(" *    ~~  **           **   ~~                 PIGGY OS                     \n");
-	printf(" *   ~~  **   ^^    ^^  **   ~~                                             \n");
-	printf(" *  ~~~~**     @    @    **~~~~~           ~~Command List~~                 \n");
-	printf(" *      **    _______    **       1. Help              6. G1:Guessing   \n");
-	printf(" *      **    | * * |    **       2. FileManage        7. G2:EightQueen \n");
-	printf(" *      **    ~~~~~~~    **       3. ProcessManage     8. G3:Maze       \n");
-	printf(" *       **      3      **        4. Carlendar         9. G4:BoxMan     \n");
-	printf(" *        **           **         5. Calculator        10.Clear             \n");
-	printf(" *          ***********                                                     \n");
-	printf(" *                                                                          \n");
-	printf(" *                                                                          \n");
-	printf(" *    **************************************************************        \n");
-
-
-	//    printf("=============================================================================\n");
-	//	printf("Command List     :\n");
-	//	printf("1. process       : A process manage,show you all process-info here\n");
-	//	printf("2. filemng       : Run the file manager\n");
-	//	printf("3. clear         : Clear the screen\n");
-	//	printf("4. help          : Show this help message\n");
-	//	printf("5. game   : Play an interesting game which help you improve math\n");
-	//	printf("5. timer        : Run a easy timer Accurate to seconds\n");
-	//	printf("6. carlendar   :Run an easy Calendar\n");
-	//	printf("7. calculator   :Run an easy Calculator\n");
-	//	printf("8. guessing   :Run an interesting game\n");
-	//	printf("==============================================================================\n");		
-}
-
-void ProcessManage()
-{
-	int i;
-	printf("    *                                                                     \n");
-	printf("    *     ~~~~  ** **** **  ~~~~                                          \n");
-	printf("    *    ~~  **           **   ~~                                         \n");
-	printf("    *   ~~  **   ^^    ^^  **   ~~                                        \n");
-	printf("    *  ~~~~**     @    @    **~~~~~                                       \n");
-	printf("    *      **    _______    **              Welcome!                      \n");
-	printf("    *      **    | * * |    **              PIGGY OS                      \n");
-	printf("    *      **    ~~~~~~~    **                                            \n");
-	printf("    *       **      3      **            ProcessManage!                   \n");
-	printf("    *        **           **                                              \n");
-	printf("    *          ***********                                                \n");
-	printf("    *                                                                     \n");
-	printf("    *                                                                     \n");
-	printf("    *    ********************************************************         \n");
-
-	printf("=============================================================================\n");
-	printf("   ProcessID   |   ProcessName   |   ProcessPriority   |   Running?\n");
-	//进程号，进程名，优先级，是否是系统进程，是否在运行
-	printf("-----------------------------------------------------------------------------\n");
-	for (i = 0; i < NR_TASKS + NR_PROCS; ++i)//逐个遍历
-	{
-		//		if ( proc_table[i].priority == 0) continue;//系统资源跳过
-		printf("    %d             %s                %d                    yes\n", proc_table[i].pid, proc_table[i].name, proc_table[i].priority);
-	}
-	printf("=============================================================================\n");
-}
 
 
