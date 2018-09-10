@@ -10,9 +10,7 @@
 #include "global.h"
 #include "proto.h"
 
-/*****************************************************************************
-*                                Carlendar
-*****************************************************************************/
+//////////////////////////Carlendar////////////////////////////////////
 
 int year, month, day;
 int day_of_month[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -426,9 +424,128 @@ void Carlendar(int fd_stdin, int fd_stdout)
 	}
 }
 
-/*****************************************************************************
-*                                finger-guessing game
-*****************************************************************************/
+
+//////////////////////////Calculator///////////////////////////////////
+
+#define FORMULA_LENGTH_ 500
+
+char Input[FORMULA_LENGTH_];
+char formula[FORMULA_LENGTH_];
+int token = 0;
+int InitFormula();
+double level1();
+double level2();
+double level3();
+int IsAllowed(char temp);
+int IsBlank(char c);
+double Transfer();
+
+int InitFormula() {
+	int t = 0, i = 0;
+	int type = 0;
+	for (int i = 0; i < strlen(Input); i++) {
+		if (!IsAllowed(Input[i]))
+			return 0;
+		else if (IsBlank(Input[i]))
+			continue;
+		else if (Input[i] == '\0')
+			break;
+		else {
+			formula[t] = Input[i];
+			t++;
+		}
+		if (Input[i] == '.')
+			type = 1;
+	}
+	if (type == 0)
+		return 1;
+	else
+		return 2;
+}
+
+//+ & -
+double level1() {
+	double temp = level2();
+	while (formula[token] == '+' || formula[token] == '-') {
+		switch (formula[token]) {
+		case '+': token++;
+			temp = temp + level2();
+			break;
+		case '-': token++;
+			temp = temp - level2();
+			break;
+		}
+	}
+	return temp;
+}
+
+//* & /
+double level2() {
+	double temp = level3();
+	while (formula[token] == '*' || formula[token] == '/') {
+		switch (formula[token]) {
+		case '*': token++;
+			temp = temp * level3();
+			break;
+		case '/': token++;
+			temp = temp / level3();
+			break;
+		}
+	}
+	return temp;
+}
+
+double level3() {
+	double temp;
+	if (formula[token] == '(') {
+		token++;
+		temp = level1();
+		token++;
+	}
+	else if ((int)formula[token] >= 48 && (int)formula[token] <= 57) {
+		temp = Transfer();
+	}
+	return temp;
+}
+
+int IsAllowed(char temp) {
+	if (temp == '+' || temp == '-' || temp == '*' || temp == '/'
+		|| (int)temp >= 48 && (int)temp <= 57
+		|| temp == '(' || temp == ')' || temp == '.'
+		|| IsBlank(temp))
+		return 1;
+	else
+		return 0;
+}
+
+int IsBlank(char c) {
+	if (c == ' ' || c == '\t' || c == '\n')
+		return 1;
+	else
+		return 0;
+}
+
+double Transfer() {
+	double temp = 0;
+	while ((int)formula[token] >= 48 && (int)formula[token] <= 57) {
+		temp = temp * 10 + (int)formula[token] - 48;
+		token++;
+	}
+	if (formula[token] == '.') {
+		token++;
+		while ((int)formula[token] >= 48 && (int)formula[token] <= 57 && token < strlen(Input)) {
+			double add = (int)formula[token] - 48;
+			add = add * 0.1;
+			temp = temp + add;
+			token++;
+		}
+	}
+	return temp;
+}
+
+
+///////////////////////Finger-Guessing/////////////////////////////////
+
 int computer_game(int count)
 {
 	int result = 0;
@@ -552,128 +669,7 @@ void Guessing(fd_stdin, fd_stdout)
 }
 
 
-/*======================================================================*
-Calculator
-*======================================================================*/
-#define FORMULA_LENGTH_ 500
-
-char Input[FORMULA_LENGTH_];
-char formula[FORMULA_LENGTH_];
-int token = 0;
-int InitFormula();
-double level1();
-double level2();
-double level3();
-int IsAllowed(char temp);
-int IsBlank(char c);
-double Transfer();
-
-int InitFormula() {
-	int t = 0, i = 0;
-	int type = 0;
-	for (int i = 0; i < strlen(Input); i++) {
-		if (!IsAllowed(Input[i]))
-			return 0;
-		else if (IsBlank(Input[i]))
-			continue;
-		else if (Input[i] == '\0')
-			break;
-		else {
-			formula[t] = Input[i];
-			t++;
-		}
-		if (Input[i] == '.')
-			type = 1;
-	}
-	if (type == 0)
-		return 1;
-	else
-		return 2;
-}
-
-//+ & -
-double level1() {
-	double temp = level2();
-	while (formula[token] == '+' || formula[token] == '-') {
-		switch (formula[token]) {
-		case '+': token++;
-			temp = temp + level2();
-			break;
-		case '-': token++;
-			temp = temp - level2();
-			break;
-		}
-	}
-	return temp;
-}
-
-//* & /
-double level2() {
-	double temp = level3();
-	while (formula[token] == '*' || formula[token] == '/') {
-		switch (formula[token]) {
-		case '*': token++;
-			temp = temp * level3();
-			break;
-		case '/': token++;
-			temp = temp / level3();
-			break;
-		}
-	}
-	return temp;
-}
-
-double level3() {
-	double temp;
-	if (formula[token] == '(') {
-		token++;
-		temp = level1();
-		token++;
-	}
-	else if ((int)formula[token] >= 48 && (int)formula[token] <= 57) {
-		temp = Transfer();
-	}
-	return temp;
-}
-
-int IsAllowed(char temp) {
-	if (temp == '+' || temp == '-' || temp == '*' || temp == '/'
-		|| (int)temp >= 48 && (int)temp <= 57
-		|| temp == '(' || temp == ')' || temp == '.'
-		|| IsBlank(temp))
-		return 1;
-	else
-		return 0;
-}
-
-int IsBlank(char c) {
-	if (c == ' ' || c == '\t' || c == '\n')
-		return 1;
-	else
-		return 0;
-}
-
-double Transfer() {
-	double temp = 0;
-	while ((int)formula[token] >= 48 && (int)formula[token] <= 57) {
-		temp = temp * 10 + (int)formula[token] - 48;
-		token++;
-	}
-	if (formula[token] == '.') {
-		token++;
-		while ((int)formula[token] >= 48 && (int)formula[token] <= 57 && token < strlen(Input)) {
-			double add = (int)formula[token] - 48;
-			add = add * 0.1;
-			temp = temp + add;
-			token++;
-		}
-	}
-	return temp;
-}
-
-/*======================================================================*
-gobang
-*======================================================================*/
+///////////////////////////GoBang//////////////////////////////////////
 
 struct Pos
 {
@@ -892,10 +888,7 @@ void gobang(fd_stdin, fd_stdout)
 }
 
 
-/*======================================================================*
-Minesweeper
-*======================================================================*/
-
+////////////////////////MineSweeper////////////////////////////////////
 
 void draw_table(int table[15][15], struct Pos pos)
 {
@@ -1137,9 +1130,10 @@ void Minesweeper(fd_stdin, fd_stdout)
 	return 0;
 }
 
-/*======================================================================*
-kernel_main
-*======================================================================*/
+
+/*****************************************************************************
+*                                kernel_main
+*****************************************************************************/
 PUBLIC int kernel_main()
 {
 	disp_str("-----\"kernel_main\" begins-----\n");
@@ -1239,9 +1233,8 @@ PUBLIC int get_ticks()
 }
 
 
-/*======================================================================*
-TestA
-*======================================================================*/
+
+////////////////////////TestA////////////////////////////////////
 
 #define MAX_ARRAY_NUM 1000 
 #define MAX_FILE_PER_LAYER 10
@@ -1515,16 +1508,13 @@ void ShowMessage() {
 void TestA()
 {
 	int fd;
-	int m,i, n;
+	int i, n;
 	char cmd[8];
 	char filename[120];
 	char buf[1024];
 
-	char _name[MAX_FILE_NAME_LENGTH];
-
 	char tty_name[] = "/dev_tty0";
 
-	char rdbuf[128];
 
 	int fd_stdin = open(tty_name, O_RDWR);
 	assert(fd_stdin == 0);
@@ -1693,154 +1683,6 @@ void TestA()
 
 	clear();
 
-	FSInit();
-
-	int len = ReadDisk();
-
-	ShowMessage();
-
-	while (1) {
-		for (int i = 0; i <= 127; i++)
-			rdbuf[i] = '\0';
-		for (int i = 0; i < MAX_FILE_NAME_LENGTH; i++)
-			_name[i] = '\0';
-		printf("\n/%s:", blocks[currentFileID].fileName);
-
-		int r = read(fd_stdin, rdbuf, 70);
-		rdbuf[r] = 0;
-		assert(fd_stdin == 0);
-
-		if (rdbuf[0] == 't' && rdbuf[1] == 'o' && rdbuf[2] == 'u' && rdbuf[3] == 'c' && rdbuf[4] == 'h') {
-			if (rdbuf[5] != ' ') {
-				printf("enter the name like this : create XXX");
-				continue;
-			}
-			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 6];
-			}
-			CreateFIle(_name, 0);
-		}
-		else if (rdbuf[0] == 'm' && rdbuf[1] == 'k' && rdbuf[2] == 'd' && rdbuf[3] == 'i' && rdbuf[4] == 'r') {
-			if (rdbuf[5] != ' ') {
-				printf("enter the name like this : mkdir XXX");
-				continue;
-			}
-			char N[MAX_FILE_NAME_LENGTH];
-			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 6];
-			}
-			CreateFIle(_name, 1);
-		}
-		else if (rdbuf[0] == 'l' && rdbuf[1] == 's') {
-			showFileList();
-		}
-		else if (rdbuf[0] == 'c' && rdbuf[1] == 'd') {
-			if (rdbuf[2] == ' ' && rdbuf[3] == '.' && rdbuf[4] == '.') {
-				ReturnFile(currentFileID);
-				continue;
-			}
-			else if (rdbuf[2] != ' ') {
-				printf("enter the name like this : mt XXX");
-				continue;
-			}
-			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 3];
-			}
-			printf("name: %s\n", _name);
-			int ID = SearchFile(_name);
-			if (ID >= 0) {
-				if (blocks[ID].fileType == 1) {
-					currentFileID = ID;
-					continue;
-				}
-				else if (blocks[ID].fileType == 0) {
-					while (1) {
-						printf("input the character representing the method you want to operate:"
-							"\nu --- update"
-							"\nd --- detail of the content"
-							"\nq --- quit\n");
-						int r = read(fd_stdin, rdbuf, 70);
-						rdbuf[r] = 0;
-						if (strcmp(rdbuf, "u") == 0) {
-							printf("input the text you want to write:\n");
-							int r = read(fd_stdin, blocks[ID].content, MAX_CONTENT_);
-							blocks[ID].content[r] = 0;
-						}
-						else if (strcmp(rdbuf, "d") == 0) {
-							printf("--------------------------------------------"
-								"\n%s\n-------------------------------------\n", blocks[ID].content);
-						}
-						else if (strcmp(rdbuf, "q") == 0) {
-							printf("would you like to save the change? y/n");
-							int r = read(fd_stdin, rdbuf, 70);
-							rdbuf[r] = 0;
-							if (strcmp(rdbuf, "y") == 0) {
-								printf("save changes!");
-							}
-							else {
-								printf("quit without changing");
-							}
-							break;
-						}
-					}
-				}
-			}
-			else
-				printf("No such file!");
-		}
-		else if (rdbuf[0] == 'r' && rdbuf[1] == 'm') {
-			if (rdbuf[2] != ' ') {
-				printf("enter the name like this : rm XXX");
-				continue;
-			}
-			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
-				_name[i] = rdbuf[i + 3];
-			}
-			int ID = SearchFile(_name);
-			if (ID >= 0) {
-				printf("delete successfully!\n");
-				DeleteFile(ID);
-				for (int i = 0; i < blocks[currentFileID].childrenNumber; i++) {
-					if (ID == blocks[currentFileID].children[i]) {
-						for (int j = i + 1; j < blocks[currentFileID].childrenNumber; j++) {
-							blocks[currentFileID].children[i] = blocks[currentFileID].children[j];
-						}
-						blocks[currentFileID].childrenNumber--;
-						break;
-					}
-				}
-			}
-			else
-				printf("No such file!\n");
-		}
-		else if (rdbuf[0] == 's' && rdbuf[1] == 'v') {
-			WriteDisk(1000);
-		}
-		else if (strcmp(rdbuf, "help") == 0) {
-			printf("\n\n");
-			ShowMessage();
-			printf("\n\n");
-		}
-		else {
-			printf("Wrong instruction!");
-		}
-	}
-
-	assert(0); /* never arrive here */
-
-}
-
-/*======================================================================*
-TestB
-*======================================================================*/
-void TestB()
-{
-	char tty_name[] = "/dev_tty1";
-
-	int fd_stdin = open(tty_name, O_RDWR);
-	assert(fd_stdin == 0);
-	int fd_stdout = open(tty_name, O_RDWR);
-	assert(fd_stdout == 1);
 
 	clear();
 
@@ -1992,11 +1834,162 @@ void TestB()
 		}
 
 	}
+
 }
 
-/*****************************************************************************
-*                                TestC
-*****************************************************************************/
+
+////////////////////////TestB////////////////////////////////////
+
+void TestB()
+{
+	int i, n;
+	char tty_name[] = "/dev_tty1";
+	char rdbuf[128];
+	char _name[MAX_FILE_NAME_LENGTH];
+
+	int fd_stdin = open(tty_name, O_RDWR);
+	assert(fd_stdin == 0);
+	int fd_stdout = open(tty_name, O_RDWR);
+	assert(fd_stdout == 1);
+
+	FSInit();
+
+	int len = ReadDisk();
+
+	ShowMessage();
+
+	while (1) {
+		for (int i = 0; i <= 127; i++)
+			rdbuf[i] = '\0';
+		for (int i = 0; i < MAX_FILE_NAME_LENGTH; i++)
+			_name[i] = '\0';
+		printf("\n/%s:", blocks[currentFileID].fileName);
+
+		int r = read(fd_stdin, rdbuf, 70);
+		rdbuf[r] = 0;
+		assert(fd_stdin == 0);
+
+		if (rdbuf[0] == 't' && rdbuf[1] == 'o' && rdbuf[2] == 'u' && rdbuf[3] == 'c' && rdbuf[4] == 'h') {
+			if (rdbuf[5] != ' ') {
+				printf("enter the name like this : create XXX");
+				continue;
+			}
+			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
+				_name[i] = rdbuf[i + 6];
+			}
+			CreateFIle(_name, 0);
+		}
+		else if (rdbuf[0] == 'm' && rdbuf[1] == 'k' && rdbuf[2] == 'd' && rdbuf[3] == 'i' && rdbuf[4] == 'r') {
+			if (rdbuf[5] != ' ') {
+				printf("enter the name like this : mkdir XXX");
+				continue;
+			}
+			char N[MAX_FILE_NAME_LENGTH];
+			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
+				_name[i] = rdbuf[i + 6];
+			}
+			CreateFIle(_name, 1);
+		}
+		else if (rdbuf[0] == 'l' && rdbuf[1] == 's') {
+			showFileList();
+		}
+		else if (rdbuf[0] == 'c' && rdbuf[1] == 'd') {
+			if (rdbuf[2] == ' ' && rdbuf[3] == '.' && rdbuf[4] == '.') {
+				ReturnFile(currentFileID);
+				continue;
+			}
+			else if (rdbuf[2] != ' ') {
+				printf("enter the name like this : mt XXX");
+				continue;
+			}
+			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
+				_name[i] = rdbuf[i + 3];
+			}
+			printf("name: %s\n", _name);
+			int ID = SearchFile(_name);
+			if (ID >= 0) {
+				if (blocks[ID].fileType == 1) {
+					currentFileID = ID;
+					continue;
+				}
+				else if (blocks[ID].fileType == 0) {
+					while (1) {
+						printf("input the character representing the method you want to operate:"
+							"\nu --- update"
+							"\nd --- detail of the content"
+							"\nq --- quit\n");
+						int r = read(fd_stdin, rdbuf, 70);
+						rdbuf[r] = 0;
+						if (strcmp(rdbuf, "u") == 0) {
+							printf("input the text you want to write:\n");
+							int r = read(fd_stdin, blocks[ID].content, MAX_CONTENT_);
+							blocks[ID].content[r] = 0;
+						}
+						else if (strcmp(rdbuf, "d") == 0) {
+							printf("--------------------------------------------"
+								"\n%s\n-------------------------------------\n", blocks[ID].content);
+						}
+						else if (strcmp(rdbuf, "q") == 0) {
+							printf("would you like to save the change? y/n");
+							int r = read(fd_stdin, rdbuf, 70);
+							rdbuf[r] = 0;
+							if (strcmp(rdbuf, "y") == 0) {
+								printf("save changes!");
+							}
+							else {
+								printf("quit without changing");
+							}
+							break;
+						}
+					}
+				}
+			}
+			else
+				printf("No such file!");
+		}
+		else if (rdbuf[0] == 'r' && rdbuf[1] == 'm') {
+			if (rdbuf[2] != ' ') {
+				printf("enter the name like this : rm XXX");
+				continue;
+			}
+			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
+				_name[i] = rdbuf[i + 3];
+			}
+			int ID = SearchFile(_name);
+			if (ID >= 0) {
+				printf("delete successfully!\n");
+				DeleteFile(ID);
+				for (int i = 0; i < blocks[currentFileID].childrenNumber; i++) {
+					if (ID == blocks[currentFileID].children[i]) {
+						for (int j = i + 1; j < blocks[currentFileID].childrenNumber; j++) {
+							blocks[currentFileID].children[i] = blocks[currentFileID].children[j];
+						}
+						blocks[currentFileID].childrenNumber--;
+						break;
+					}
+				}
+			}
+			else
+				printf("No such file!\n");
+		}
+		else if (rdbuf[0] == 's' && rdbuf[1] == 'v') {
+			WriteDisk(1000);
+		}
+		else if (strcmp(rdbuf, "help") == 0) {
+			printf("\n\n");
+			ShowMessage();
+			printf("\n\n");
+		}
+		else {
+			printf("Wrong instruction!");
+		}
+	}
+
+	assert(0); /* never arrive here */
+}
+
+
+////////////////////////TestC////////////////////////////////////
 void TestC()
 {
 	//ProcessManage();
@@ -2070,10 +2063,6 @@ void clear()
 
 }
 
-//void show()
-//{
-//	printf("%d  %d  %d  %d",console_table[current_console].con_size, console_table[current_console].crtc_start, console_table[current_console].cursor, console_table[current_console].orig);
-//}
 
 void help()
 {
