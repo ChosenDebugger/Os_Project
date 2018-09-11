@@ -12,6 +12,8 @@
 
 #define MAX_COMMAND_LEN 128
 
+//Vol.1.5.5
+//Finally Edit @2018/9/11 08:44
 ////////////////////////////////BasicFunctions/////////////////////////////
 
 //清屏
@@ -23,29 +25,33 @@ void clear()
 
 }
 
-//指令列表
-void help()
+void ShowCommands()
 {
 	clear();
 
 	printf(" ==============================================================================\n");
 	printf(" ==============================================================================\n");
-	printf(" ==                                                                            \n");
-	printf(" ==                        <-  Command List  ->                                \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
-	printf(" ==              1. help	       ----     Show Help                          \n");
-	printf(" ==              2. Carlendar      ----     Start Carlendar                    \n");
-	printf(" ==              3. Calculator     ----     Start Calculator                   \n");
-	printf(" ==              4. Game1          ----     Play Finger Guessing               \n");
-	printf(" ==              5. Game2          ----     Play GoBang                        \n");
-	printf(" ==              6. Game3          ----     Play MineSweeper                   \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                        <-  Command List  ->                              ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==              1. help           ----     Show Help                        ==\n");
+	printf(" ==              2. Calendar       ----     Start Calendar                   ==\n");
+	printf(" ==              3. Calculator     ----     Start Calculator                 ==\n");
+	printf(" ==              4. Game1          ----     Play Finger Guessing             ==\n");
+	printf(" ==              5. Game2          ----     Play GoBang                      ==\n");
+	printf(" ==              6. Game3          ----     Play MineSweeper                 ==\n");
+	printf(" ==              7. Clear                                                    ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                                                                          ==\n");
 	printf(" ==============================================================================\n");
 	printf(" ==============================================================================\n");
+}
 
+//指令列表
+void help()
+{
+	ShowCommands();
 }
 
 void startAnimate() {
@@ -71,10 +77,10 @@ void startAnimate() {
 }
 
 
-
 /////////////////////////APPLICATION///////////////////////////////////
 
-//////////////////////////Carlendar////////////////////////////////////
+
+//////////////////////////Calendar////////////////////////////////////
 
 int year, month, day;
 int day_of_month[12] = { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
@@ -365,8 +371,10 @@ void print(int year, int month, int day, int fd_stdin)
 	printf("\n");
 }
 
-void Carlendar(int fd_stdin, int fd_stdout)
+void Calendar(int fd_stdin, int fd_stdout)
 {
+	clear();
+
 	char inputCmd[MAX_COMMAND_LEN];
 	int r = 0;
 	int choice, year = 1000, month = 0, day = 0, flag = 1;
@@ -496,15 +504,15 @@ void Carlendar(int fd_stdin, int fd_stdout)
 char Input[FORMULA_LENGTH_];
 char formula[FORMULA_LENGTH_];
 int token = 0;
-int InitFormula();
-double level1();
-double level2();
-double level3();
+int judge_corr();
+double add_minus();
+double time_devide();
+double bracket();
 int IsAllowed(char temp);
 int IsBlank(char c);
 double Transfer();
 
-int InitFormula() {
+int judge_corr() {
 	int t = 0, i = 0;
 	int type = 0;
 	for (int i = 0; i < strlen(Input); i++) {
@@ -528,15 +536,15 @@ int InitFormula() {
 }
 
 //+ & -
-double level1() {
-	double temp = level2();
+double add_minus() {
+	double temp = time_devide();
 	while (formula[token] == '+' || formula[token] == '-') {
 		switch (formula[token]) {
 		case '+': token++;
-			temp = temp + level2();
+			temp = temp + time_devide();
 			break;
 		case '-': token++;
-			temp = temp - level2();
+			temp = temp - time_devide();
 			break;
 		}
 	}
@@ -544,26 +552,26 @@ double level1() {
 }
 
 //* & /
-double level2() {
-	double temp = level3();
+double time_devide() {
+	double temp = bracket();
 	while (formula[token] == '*' || formula[token] == '/') {
 		switch (formula[token]) {
 		case '*': token++;
-			temp = temp * level3();
+			temp = temp * bracket();
 			break;
 		case '/': token++;
-			temp = temp / level3();
+			temp = temp / bracket();
 			break;
 		}
 	}
 	return temp;
 }
 
-double level3() {
+double bracket() {
 	double temp;
 	if (formula[token] == '(') {
 		token++;
-		temp = level1();
+		temp = add_minus();
 		token++;
 	}
 	else if ((int)formula[token] >= 48 && (int)formula[token] <= 57) {
@@ -607,7 +615,7 @@ double Transfer() {
 	return temp;
 }
 
-void Calculator(fd_stdin,fd_stdout) {
+void Calculator(fd_stdin, fd_stdout) {
 	clear();
 
 	printf("==========================================================================\n");
@@ -618,9 +626,9 @@ void Calculator(fd_stdin,fd_stdout) {
 	printf("| |____ /       \\ |___ |____ |____| |___ /       \\   |   |____| |   \\   |\n");
 	printf("|________________________________________________________________________|\n");
 	printf("|                                                                        |\n");
-	printf("|                 Input your formula                                     |\n");
-	printf("|                                                                        |\n");
+	printf("|                 Input your formula(+_*/()                              |\n");
 	printf("|                    For example: 5+2                                    |\n");
+	printf("|                   Press \"q\" to exit                                    |\n");
 	printf("==========================================================================\n");
 	printf("\n");
 
@@ -635,12 +643,12 @@ void Calculator(fd_stdin,fd_stdout) {
 		if (strcmp(Input, "q") == 0) {
 			break;
 		}
-		int test = InitFormula();
+		int test = judge_corr();
 		if (!test) {
-			printf("error!");
+			printf("error!\n");
 			continue;
 		}
-		double result = level1();
+		double result = add_minus();
 		if (test == 1)
 			printf("result is : %d\n", (int)result);
 		else if (test == 2) {
@@ -696,6 +704,16 @@ int computer_game(int count)
 	return result;
 }
 
+//随机数
+
+int next = 1;
+unsigned int rand()
+{
+	next = next * 1103515245 + 12345;
+	next = (next / 65536) % 32768;
+	return next;
+}
+
 void Guessing(fd_stdin, fd_stdout)
 {
 	int gamer = 1;			// 玩家出拳
@@ -707,22 +725,19 @@ void Guessing(fd_stdin, fd_stdout)
 
 	int r;
 
-	printf("    *                                                                     \n");
-	printf("    *     ~~~~  ** **** **  ~~~~                                          \n");
-	printf("    *    ~~  **           **   ~~     Welcome!                            \n");
-	printf("    *   ~~  **   ^^    ^^  **   ~~    Game-1:FingerGuessing               \n");
-	printf("    *  ~~~~**     @    @    **~~~~~                                       \n");
-	printf("    *      **    _______    **        RULES:                              \n");
-	printf("    *      **    | * * |    **        PVE                                 \n");
-	printf("    *      **    ~~~~~~~    **        Enter q to quit this program        \n");
-	printf("    *       **      3      **                                             \n");
-	printf("    *        **           **           GGGG    A    M  M EEEE              \n");
-	printf("    *          ***********             G  __  A A   M\~M E___              \n");
-	printf("    *                                  G  G  AAAAA  M  M E                 \n");
-	printf("    *                                  GGGG A     A M  M EEEE              \n");
-	printf("    *                                                                     \n");
-	printf("    *    ********************************************************         \n");
-
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                      <-  Rules  ->                                       ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                      A. Scissors                                         ==\n");
+	printf(" ==                      B. Stone                                            ==\n");
+	printf(" ==                      C. Cloth                                            ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                      D. Quit Game                                        ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==============================================================================\n");
+	printf(" ==============================================================================\n");
 
 	while (1) {
 		count++;
@@ -761,7 +776,7 @@ void Guessing(fd_stdin, fd_stdout)
 			break;
 		}
 
-		computer = computer_game(count);  // 产生随机数，得到电脑出拳
+		computer = computer_game(rand());  // 产生随机数，得到电脑出拳
 		result = (int)gamer + computer;  // gamer 为 char 类型，数学运算时要强制转换类型
 		printf("Computer ");
 		switch (computer)
@@ -851,7 +866,7 @@ int judge_for_gobang(int table[15][15])
 	return 0;
 }
 
-void gobang(fd_stdin, fd_stdout)
+void Gobang(fd_stdin, fd_stdout)
 {
 	int table[15][15] = { 0 };
 	int d1 = 0, d2 = 0, d3 = 0, d4 = 0;
@@ -865,21 +880,22 @@ void gobang(fd_stdin, fd_stdout)
 	while (1)
 	{
 		clear();
-		printf("    *                                                                     \n");
-		printf("    *     ~~~~  ** **** **  ~~~~                                          \n");
-		printf("    *    ~~  **           **   ~~     Welcome!                            \n");
-		printf("    *   ~~  **   ^^    ^^  **   ~~    Game-4:BoxMan               \n");
-		printf("    *  ~~~~**     @    @    **~~~~~                                       \n");
-		printf("    *      **    _______    **        RULES:                              \n");
-		printf("    *      **    | * * |    **        s:DOWN d:RIGHT s:UP  a:LEFT q:QUIT      \n");
-		printf("    *      **    ~~~~~~~    **        ILLUSTRATE:                             \n");
-		printf("    *       **      3      **         #:WALL d:DESTINATION b:BOX  &:PEOPLE  \n");
-		printf("    *        **           **           GGGG    A    M  M EEEE              \n");
-		printf("    *          ***********             G  __  A A   MMMM E___              \n");
-		printf("    *                                  G  G  AAAAA  M  M E                 \n");
-		printf("    *                                  GGGG A     A M  M EEEE              \n");
-		printf("    *                                                                     \n");
-		printf("    *    ********************************************************         \n");
+
+		printf("    *    ********************************************************    *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *         Welcome!                                               *    \n");
+		printf("    *         Game-2:Gobang                                          *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *         RULES:                                                 *    \n");
+		printf("    *         s:DOWN d:RIGHT s:UP  a:LEFT  j:put down                *    \n");
+		printf("    *         ILLUSTRATE:                                            *    \n");
+		printf("    *         +:blank x:your chesspiece o:computer's chesspiece      *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *         press 'b' to begin                                     *    \n");
+		printf("    *         or 'q' to quit                                         *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *    ********************************************************    *    \n");
 
 		int len = read(fd_stdin, inputCmd, 70);
 		inputCmd[len] = 0;
@@ -908,14 +924,16 @@ void gobang(fd_stdin, fd_stdout)
 				case 'd':now.y += 1;
 					draw_table_for_gobang(table, now);
 					break;
-
 				}
 				if (com == 'j')
 				{
 					if (table[now.x][now.y] == 0)table[now.x][now.y] = 1;
 					if (judge_for_gobang(table) == 1)
 					{
-						printf("You win!");
+						printf("You win");
+
+						milli_delay(2000);
+
 						break;
 					}
 					for (int i = -4; i < 4; i++)
@@ -992,9 +1010,29 @@ void gobang(fd_stdin, fd_stdout)
 					draw_table_for_gobang(table, now);
 					if (judge_for_gobang(table) == 2)
 					{
-						printf("You lose!");
+						printf("You lose");
+
+						milli_delay(2000);
+
 						break;
 					}
+				}
+				else if (com == 'q') {
+					printf("Are you sure to quit? (y/n)");
+
+					char y_or_n;
+					len = read(fd_stdin, inputCmd, 70);
+					inputCmd[len] = 0;
+					y_or_n = inputCmd[0];
+					 
+					if (y_or_n == 'y') {
+						clear();
+						break;
+					}
+					if (y_or_n == 'n') {
+						continue;
+					}
+					else continue;
 				}
 			}
 		}
@@ -1005,13 +1043,13 @@ void gobang(fd_stdin, fd_stdout)
 
 ////////////////////////MineSweeper////////////////////////////////////
 
-void draw_table(int table[15][15], struct Pos pos)
+void draw_table(int table[17][17], struct Pos pos)
 {
 	clear();
 
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 16; i++)
 	{
-		for (int j = 0; j < 15; j++)
+		for (int j = 1; j < 16; j++)
 		{
 			if (i == pos.x&&j == pos.y)printf("o ");
 			else
@@ -1026,7 +1064,7 @@ void draw_table(int table[15][15], struct Pos pos)
 	}
 }
 
-void check(int hide[15][15], int table[15][15], int x, int y)
+void check(int hide[17][17], int table[17][17], int x, int y)
 {
 	if (table[x + 1][y] == -1)
 	{
@@ -1070,11 +1108,11 @@ void check(int hide[15][15], int table[15][15], int x, int y)
 	}
 }
 
-int judge(int table[15][15])
+int judge(int table[17][17])
 {
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 16; i++)
 	{
-		for (int j = 0; j < 15; j++)
+		for (int j = 1; j < 16; j++)
 		{
 			if (table[i][j] == -1)return 0;
 		}
@@ -1082,13 +1120,13 @@ int judge(int table[15][15])
 	return 1;
 }
 
-void Minesweeper(fd_stdin, fd_stdout)
+void MineSweeper(fd_stdin, fd_stdout)
 {
-	int table[15][15] = { 0 };
-	int hide[15][15] = { (0,0,0,10,0,10,10,0,10,0,0,0,0,0,10), (10,0,0,0,0,0,0,0,0,0,0,0,0,10,0), (0,0,0,0,0,0,10,10,10,0,0,0,0,0,0), (0,0,0,0,0,0,0,10,10,0,0,0,0,0,0), (10,0,0,0,0,0,0,0,0,0,0,0,10,0,0), (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), (0,0,0,0,0,0,10,0,0,0,10,0,0,0,10), (0,10,0,0,0,0,0,0,0,0,10,0,0,0,10), (0,0,0,0,0,0,0,0,0,0,0,10,0,0,0), (0,0,0,0,0,0,10,0,0,0,0,0,0,0,0), (0,0,0,10,0,10,0,10,0,10,10,10,0,10,0), (0,0,0,10,0,0,0,10,0,0,0,10,0,0,0), (0,0,0,0,0,10,0,0,0,10,0,0,0,0,0), (0,0,0,0,10,0,0,10,0,0,0,0,10,0,0), (0,0,0,0,0,10,0,0,0,10,0,0,10,0,0) };
-	//int hide[15][15];
-	int bottom[15][15] = { 0 };
-	//int seed = 0;
+	int table[17][17] = { 0 };
+	//int hide[17][17] = { (0,0,0,10,0,10,10,0,10,0,0,0,0,0,10), (10,0,0,0,0,0,0,0,0,0,0,0,0,10,0), (0,0,0,0,0,0,10,10,10,0,0,0,0,0,0), (0,0,0,0,0,0,0,10,10,0,0,0,0,0,0), (10,0,0,0,0,0,0,0,0,0,0,0,10,0,0), (0,0,0,0,0,0,0,0,0,0,0,0,0,0,0), (0,0,0,0,0,0,10,0,0,0,10,0,0,0,10), (0,10,0,0,0,0,0,0,0,0,10,0,0,0,10), (0,0,0,0,0,0,0,0,0,0,0,10,0,0,0), (0,0,0,0,0,0,10,0,0,0,0,0,0,0,0), (0,0,0,10,0,10,0,10,0,10,10,10,0,10,0), (0,0,0,10,0,0,0,10,0,0,0,10,0,0,0), (0,0,0,0,0,10,0,0,0,10,0,0,0,0,0), (0,0,0,0,10,0,0,10,0,0,0,0,10,0,0), (0,0,0,0,0,10,0,0,0,10,0,0,10,0,0) };
+	int hide[17][17] = { 0 };
+	int bottom[17][17] = { 0 };
+	int seed = 0;
 
 	char com = 0;
 	struct Pos now;
@@ -1101,43 +1139,46 @@ void Minesweeper(fd_stdin, fd_stdout)
 	{
 		clear();
 
-		printf("    *                                                                     \n");
-		printf("    *                                                \n");
-		printf("    *             Welcome!                            \n");
-		printf("    *             Game-4: Sweep               \n");
-		printf("    *                                          \n");
-		printf("    *             RULES:                              \n");
-		printf("    *             s:DOWN d:RIGHT s:UP  a:LEFT       \n");
-		printf("    *             j:do k:mark l:quick_do                              \n");
-		printf("    *                   \n");
-		printf("    *              press 'b' to begin      \n");
-		printf("    *              or 'q' to quit                               \n");
-		printf("    *                                                 \n");
-		printf("    *                                             \n");
-		printf("    *                                                                     \n");
-		printf("    *    ********************************************************         \n");
-		
+		printf("    *    ********************************************************    *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *         Welcome!                                               *    \n");
+		printf("    *         Game-3:Sweep                                           *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *         RULES:                                                 *    \n");
+		printf("    *         s:DOWN d:RIGHT s:UP  a:LEFT  j:put down                *    \n");
+		printf("    *         j:open k:mark l:quick_open                             *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *         press 'b' to begin                                     *    \n");
+		printf("    *         or 'q' to quit                                         *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *                                                                *    \n");
+		printf("    *    ********************************************************    *    \n");
+
 		int len = read(fd_stdin, inputCmd, 70);
 		inputCmd[len] = 0;
 		com = inputCmd[0];
 
 		if (com == 'b')
 		{
-			//printf("chose level(1`100):");
-			//scanf_s("%d", &seed);
-			//srand(seed);
-			for (int i = 0; i < 15; i++)
+			printf("chose level(1`100):");
+
+			len = read(fd_stdin, inputCmd, 70);
+			inputCmd[len] = 0;
+			atoi(inputCmd, &next);
+
+			for (int i = 1; i < 16; i++)
 			{
-				for (int j = 0; j < 15; j++)
+				for (int j = 1; j < 16; j++)
 				{
 					table[i][j] = -1;
-					//if (rand() % 256 <= 35)hide[i][j] = 10;
+					if (rand() % 100 <= 19)hide[i][j] = 10;
 				}
 			}
 
-			for (int i = 0; i < 15; i++)
+			for (int i = 1; i < 16; i++)
 			{
-				for (int j = 0; j < 15; j++)
+				for (int j = 1; j < 16; j++)
 				{
 					if (hide[i][j] == 10)
 					{
@@ -1152,9 +1193,9 @@ void Minesweeper(fd_stdin, fd_stdout)
 					}
 				}
 			}
-			for (int i = 0; i < 15; i++)
+			for (int i = 1; i < 16; i++)
 			{
-				for (int j = 0; j < 15; j++)
+				for (int j = 1; j < 16; j++)
 				{
 					bottom[i][j] = hide[i][j];
 				}
@@ -1179,6 +1220,7 @@ void Minesweeper(fd_stdin, fd_stdout)
 					break;
 				case 'd':now.y += 1;
 					draw_table(table, now);
+					break;
 				}
 				if (com == 'j')
 				{
@@ -1192,6 +1234,9 @@ void Minesweeper(fd_stdin, fd_stdout)
 							if (judge(table) == 1)
 							{
 								printf("You win");
+
+								milli_delay(2000);
+
 								break;
 							}
 						}
@@ -1200,6 +1245,9 @@ void Minesweeper(fd_stdin, fd_stdout)
 							table[now.x][now.y] = 10;
 							draw_table(table, now);
 							printf("You lose");
+
+							milli_delay(2000);
+
 							break;
 						}
 					}
@@ -1221,6 +1269,9 @@ void Minesweeper(fd_stdin, fd_stdout)
 						if (judge(table) == 1)
 						{
 							printf("You win");
+
+							milli_delay(2000);
+
 							break;
 						}
 					}
@@ -1234,9 +1285,29 @@ void Minesweeper(fd_stdin, fd_stdout)
 						if (judge(table) == 1)
 						{
 							printf("You win");
+
+							milli_delay(2000);
+
 							break;
 						}
 					}
+				}
+				else if (com == 'q') {
+					printf("Are you sure to quit? (y/n)");
+
+					char y_or_n;
+					len = read(fd_stdin, inputCmd, 70);
+					inputCmd[len] = 0;
+					y_or_n = inputCmd[0];
+
+					if (y_or_n == 'y') {
+						clear();
+						break;
+					}
+					if (y_or_n == 'n') {
+						continue;
+					}
+					else continue;
 				}
 			}
 		}
@@ -1347,28 +1418,6 @@ PUBLIC int get_ticks()
 	return msg.RETVAL;
 }
 
-void ShowCommands()
-{
-	clear();
-
-	printf(" ==============================================================================\n");
-	printf(" ==============================================================================\n");
-	printf(" ==                                                                            \n");
-	printf(" ==                        <-  Command List  ->                                \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
-	printf(" ==              1. help	       ----     Show Help                          \n");
-	printf(" ==              2. Carlendar      ----     Start Carlendar                    \n");
-	printf(" ==              3. Calculator     ----     Start Calculator                   \n");
-	printf(" ==              4. Game1          ----     Play Finger Guessing               \n");
-	printf(" ==              5. Game2          ----     Play GoBang                        \n");
-	printf(" ==              6. Game3          ----     Play MineSweeper                   \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
-	printf(" ==============================================================================\n");
-	printf(" ==============================================================================\n");
-}
 
 ////////////////////////TestA////////////////////////////////////
 /////////////////////applications////////////////////////////////
@@ -1377,16 +1426,14 @@ void ShowCommands()
 void TestA()
 {
 	char tty_name[] = "/dev_tty0";
-
-	int fd;
-	int i, n;
-	char cmd[8];
-	char buf[1024];
-	char filename[120];
-
-	char inputCmd[MAX_COMMAND_LEN];
+	int fd_stdin = open(tty_name, O_RDWR);
+	assert(fd_stdin == 0);
+	int fd_stdout = open(tty_name, O_RDWR);
+	assert(fd_stdout == 1);
 
 	long int ii = 9999;
+
+	char inputCmd[MAX_COMMAND_LEN];
 
 	printf("                                                                           \n"); while (ii-->0); ii = 9999;
 
@@ -1409,7 +1456,7 @@ void TestA()
 	printf("###########################################################################\n");
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1500);
+	milli_delay(2000);
 	clear();
 
 	printf("                                                                           \n");
@@ -1431,7 +1478,7 @@ void TestA()
 	printf("###########################################################################\n");
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1500);
+	milli_delay(2000);
 	clear();
 
 	printf("                                                                           \n");
@@ -1453,7 +1500,7 @@ void TestA()
 	printf("###########################################################################\n");
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1500);
+	milli_delay(2000);
 	clear();
 
 	printf("                                                                           \n");
@@ -1475,7 +1522,7 @@ void TestA()
 	printf("###########################################################################\n");
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1500);
+	milli_delay(2000);
 	clear();
 
 	printf("                                                                           \n");
@@ -1497,7 +1544,7 @@ void TestA()
 	printf("###########################################################################\n");
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1500);
+	milli_delay(2000);
 	clear();
 
 	printf("                                                                           \n");
@@ -1519,7 +1566,7 @@ void TestA()
 	printf("###########################################################################\n");
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
-	milli_delay(1500);
+	milli_delay(2000);
 	clear();
 
 	printf("                                                                           \n");
@@ -1542,49 +1589,42 @@ void TestA()
 	printf("#...#......#.##...#......#.##...#......##...#......#.##...#......#.##...#..\n");
 	printf(".##.#...#......#.##...#......#.##...#......#...#...#......#.##...#......#.#\n\n");
 	milli_delay(2000);
-	
+
 	startAnimate();
 	clear();
 
 	printf(" ==============================================================================\n");
 	printf(" ==============================================================================\n");
-	printf(" ==                                                                            \n");
-	printf(" ==                        <-  Command List  ->                                \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
-	printf(" ==              1. help	       ----     Show Help                          \n");
-	printf(" ==              2. Carlendar      ----     Start Carlendar                    \n");
-	printf(" ==              3. Calculator     ----     Start Calculator                   \n");
-	printf(" ==              4. Game1          ----     Play Finger Guessing               \n");
-	printf(" ==              5. Game2          ----     Play GoBang                        \n");
-	printf(" ==              6. Game3          ----     Play MineSweeper                   \n");
-	printf(" ==              7. Clear                                                      \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                        <-  Command List  ->                              ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==              1. help           ----     Show Help                        ==\n");
+	printf(" ==              2. Calendar       ----     Start Calendar                   ==\n");
+	printf(" ==              3. Calculator     ----     Start Calculator                 ==\n");
+	printf(" ==              4. Game1          ----     Play Finger Guessing             ==\n");
+	printf(" ==              5. Game2          ----     Play GoBang                      ==\n");
+	printf(" ==              6. Game3          ----     Play MineSweeper                 ==\n");
+	printf(" ==              7. Clear                                                    ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                                                                          ==\n");
 	printf(" ==============================================================================\n");
 	printf(" ==============================================================================\n");
-
-	int fd_stdin = open(tty_name, O_RDWR);
-	assert(fd_stdin == 0);
-	int fd_stdout = open(tty_name, O_RDWR);
-	assert(fd_stdout == 1);
-
 
 	while (1) {
 		printf("\n\n\n command:");
 
 		int r = read(fd_stdin, inputCmd, 70);
 		inputCmd[r] = 0;
-		
+
 		if (strcmp(inputCmd, "Help") == 0 || strcmp(inputCmd, "help") == 0)
 		{
 			help();
 		}
 
-		else if (strcmp(inputCmd, "Carlendar") == 0 || strcmp(inputCmd, "carlendar") == 0)
+		else if (strcmp(inputCmd, "Calendar") == 0 || strcmp(inputCmd, "calendar") == 0)
 		{
-			clear();
-			Carlendar(fd_stdin, fd_stdout);
+			Calendar(fd_stdin, fd_stdout);
 		}
 
 		else if (strcmp(inputCmd, "Calculator") == 0 || strcmp(inputCmd, "calculator") == 0)
@@ -1592,51 +1632,46 @@ void TestA()
 			Calculator(fd_stdin, fd_stdout);
 		}
 
-		else if (strcmp(inputCmd, "G1") == 0)
+		else if (strcmp(inputCmd, "Game1") == 0)
 		{
 			Guessing(fd_stdin, fd_stdout);
 		}
 
-		else if (strcmp(inputCmd, "G2") == 0)
+		else if (strcmp(inputCmd, "Game2") == 0)
 		{
-			gobang(fd_stdin, fd_stdout);
+			Gobang(fd_stdin, fd_stdout);
 		}
 
-		else if (strcmp(inputCmd, "G3") == 0)
+		else if (strcmp(inputCmd, "Game3") == 0)
 		{
-			Minesweeper(fd_stdin, fd_stdout);
+			MineSweeper(fd_stdin, fd_stdout);
 		}
 
 		else if (strcmp(inputCmd, "Clear") == 0)
 		{
-			clear();
-
 			ShowCommands();
-
 		}
 
 		else
 		{
 			printf(" ==============================================================================\n");
 			printf(" ==============================================================================\n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==              <-  Wrong Command!                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==              <-  Enter: help for Commands List                             \n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
-			printf(" ==                                                                            \n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==              <-  Wrong Command!                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==              <-  Enter: help for Commands List                           ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
+			printf(" ==                                                                          ==\n");
 			printf(" ==============================================================================\n");
 			printf(" ==============================================================================\n");
 		}
-
 	}
-
 }
 
 
@@ -1657,7 +1692,7 @@ struct fileBlock {
 	int fileID;
 	int fileType;  //0 - 文本文件 , 1 - 文件夹
 	int fatherID;
-	int childrenNumber;
+	int childrenNum;
 	int children[MAX_FILE_PER_LAYER];
 
 	char content[MAX_CONTENT_LEN];
@@ -1665,14 +1700,14 @@ struct fileBlock {
 };
 
 struct fileBlock blocks[MAX_FILE_NUM];
-int IDLog[MAX_FILE_NUM];
+int bitmap[MAX_FILE_NUM];
 
 void initFileBlock(int fileID, char * fileName, int fileType) {
 	blocks[fileID].fileID = fileID;
 	strcpy(blocks[fileID].fileName, fileName);
 	blocks[fileID].fileType = fileType;
 	blocks[fileID].fatherID = currentFileID;
-	blocks[fileID].childrenNumber = 0;
+	blocks[fileID].childrenNum = 0;
 }
 
 void toStr3(char * temp, int i) {
@@ -1697,7 +1732,7 @@ void WriteDisk(int len) {
 	temp[i] = '^';
 	i++;
 	for (int j = 0; j < MAX_FILE_NUM; j++) {
-		if (IDLog[j] == 1) {
+		if (bitmap[j] == 1) {
 			toStr3(temp + i, blocks[j].fileID);
 			i = i + 3;
 			temp[i] = '^';
@@ -1732,7 +1767,7 @@ void WriteDisk(int len) {
 			}
 			temp[i] = '^';
 			i++;
-			toStr3(temp + i, blocks[j].childrenNumber);
+			toStr3(temp + i, blocks[j].childrenNum);
 			i = i + 3;
 			temp[i] = '^';
 			i++;
@@ -1770,7 +1805,7 @@ int ReadDisk() {
 	r = r + 4;
 	for (int i = 0; i < fileIDCount; i++) {
 		int ID = toInt(bufr + r);
-		IDLog[ID] = 1;
+		bitmap[ID] = 1;
 		blocks[ID].fileID = ID;
 		r = r + 4;
 		for (int i = 0; i < MAX_FILE_NAME_LENGTH; i++) {
@@ -1802,7 +1837,7 @@ int ReadDisk() {
 			r = r + 3;
 		}
 		r++;
-		blocks[ID].childrenNumber = toInt(bufr + r);
+		blocks[ID].childrenNum = toInt(bufr + r);
 		r = r + 4;
 	}
 	return n1;
@@ -1811,28 +1846,28 @@ int ReadDisk() {
 void FSInit() {
 
 	for (int i = 0; i < MAX_FILE_NUM; i++) {
-		blocks[i].childrenNumber = 0;
+		blocks[i].childrenNum = 0;
 		blocks[i].fileID = -2;
-		IDLog[i] = '\0';
+		bitmap[i] = '\0';
 	}
-	IDLog[0] = 1;
+	bitmap[0] = 1;
 	blocks[0].fileID = 0;
 	strcpy(blocks[0].fileName, "home");
 	strcpy(blocks[0].content, "welcome to use file system!");
 	blocks[0].fileType = 2;
 	blocks[0].fatherID = 0;
-	blocks[0].childrenNumber = 0;
+	blocks[0].childrenNum = 0;
 	currentFileID = 0;
 	fileIDCount = 1;
 }
 
-int CreateFile(char * fileName, int fileType) {
-	if (blocks[currentFileID].childrenNumber == MAX_FILE_PER_LAYER) {
+int NewFile(char * fileName, int fileType) {
+	if (blocks[currentFileID].childrenNum == MAX_FILE_PER_LAYER) {
 		printf("Sorry you cannot add more files in this layer");
 		return 0;
 	}
 	else {
-		for (int i = 0; i < blocks[currentFileID].childrenNumber; i++) {
+		for (int i = 0; i < blocks[currentFileID].childrenNum; i++) {
 			if (strcmp(blocks[blocks[currentFileID].children[i]].fileName, fileName) == 0) {
 				printf("You have a file of same name!");
 				return 0;
@@ -1841,23 +1876,27 @@ int CreateFile(char * fileName, int fileType) {
 		fileIDCount++;
 		int target = 0;
 		for (int i = 0; i < MAX_FILE_NUM; i++) {
-			if (IDLog[i] == 0) {
+			if (bitmap[i] == 0) {
 				target = i;
 				break;
 			}
 		}
 		initFileBlock(target, fileName, fileType);
-		blocks[currentFileID].children[blocks[currentFileID].childrenNumber] = target;
-		blocks[currentFileID].childrenNumber++;
-		printf("Create file s% successful!", fileName);
-		IDLog[target] = 1;
+		blocks[currentFileID].children[blocks[currentFileID].childrenNum] = target;
+		blocks[currentFileID].childrenNum++;
+		if (fileType == 0)
+			printf("Create file s% successfully!", fileName);
+		else if (fileType == 1)
+			printf("Create folder s% successfully!", fileName);
+
+		bitmap[target] = 1;
 		return 1;
 	}
 }
 
-void showFileList() {
+void ShowFileList() {
 	printf("-----------------------------------------\n");
-	for (int i = 0; i < blocks[currentFileID].childrenNumber; i++) {
+	for (int i = 0; i < blocks[currentFileID].childrenNum; i++) {
 		printf("%s", blocks[blocks[currentFileID].children[i]].fileName);
 		if (blocks[blocks[currentFileID].children[i]].fileType == 0) {
 			printf(".txt");
@@ -1871,7 +1910,7 @@ void showFileList() {
 }
 
 int SearchFile(char * name) {
-	for (int i = 0; i < blocks[currentFileID].childrenNumber; i++) {
+	for (int i = 0; i < blocks[currentFileID].childrenNum; i++) {
 		if (strcmp(name, blocks[blocks[currentFileID].children[i]].fileName) == 0) {
 			return blocks[currentFileID].children[i];
 		}
@@ -1884,14 +1923,14 @@ void ReturnFile(int ID) {
 }
 
 void DeleteFile(int ID) {
-	if (blocks[ID].childrenNumber > 0) {
-		for (int i = 0; i < blocks[ID].childrenNumber; i++) {
+	if (blocks[ID].childrenNum > 0) {
+		for (int i = 0; i < blocks[ID].childrenNum; i++) {
 			DeleteFile(blocks[blocks[ID].children[i]].fileID);
 		}
 	}
-	IDLog[ID] = 0;
+	bitmap[ID] = 0;
 	blocks[ID].fileID = -2;
-	blocks[ID].childrenNumber = 0;
+	blocks[ID].childrenNum = 0;
 	for (int i = 0; i < MAX_CONTENT_LEN; i++)
 		blocks[ID].content[i] = '\0';
 	for (int i = 0; i < MAX_FILE_NAME_LENGTH; i++)
@@ -1906,28 +1945,25 @@ void DeleteFile(int ID) {
 
 void ShowMessage() {
 
-	clear();
-
 	printf(" ==============================================================================\n");
 	printf(" ==============================================================================\n");
-	printf(" ==                                                                            \n");
-	printf(" ==              <-File Manage                                                 \n");
-	printf(" ==                                                                            \n");
-	printf(" ==              touch XXX	    ----     Create a new file named XXX           \n");
-	printf(" ==              mkdir XXX      ----     Start Carlendar                       \n");
-	printf(" ==              ls             ----     Show files                            \n");
-	printf(" ==              cd XXX         ----     Enter the folder named XXX            \n");
-	printf(" ==              cd ..          ----     Return to the superior level          \n");
-	printf(" ==              rm XXX         ----     Remove the file named XXX             \n");
-	printf(" ==              sv             ----     Save the system                       \n");
-	printf(" ==              help           ----     Check Commands                        \n");
-	printf(" ==                                                                            \n");
-	printf(" ==                                                                            \n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==              <- File Manage ->                                           ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==              touch XXX      ----     Create a new file named XXX         ==\n");
+	printf(" ==              mkdir XXX      ----     Start Calendar                     ==\n");
+	printf(" ==              ls             ----     Show files                          ==\n");
+	printf(" ==              cd XXX         ----     Enter the folder named XXX          ==\n");
+	printf(" ==              cd ..          ----     Return to the superior level        ==\n");
+	printf(" ==              rm XXX         ----     Remove the file named XXX           ==\n");
+	printf(" ==              sv             ----     Save the system                     ==\n");
+	printf(" ==              help           ----     Check Commands                      ==\n");
+	printf(" ==                                                                          ==\n");
+	printf(" ==                                                                          ==\n");
 	printf(" ==============================================================================\n");
 	printf(" ==============================================================================\n");
 
 }
-
 
 
 void TestB()
@@ -1968,7 +2004,7 @@ void TestB()
 			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
 				_name[i] = inputCmd[i + 6];
 			}
-			CreateFile(_name, 0);
+			NewFile(_name, 0);
 		}
 
 		//mkdir
@@ -1981,12 +2017,12 @@ void TestB()
 			for (int i = 0; i < MAX_FILE_NAME_LENGTH && i < r - 3; i++) {
 				_name[i] = inputCmd[i + 6];
 			}
-			CreateFile(_name, 1);
+			NewFile(_name, 1);
 		}
-		
+
 		//ls
 		else if (inputCmd[0] == 'l' && inputCmd[1] == 's') {
-			showFileList();
+			ShowFileList();
 		}
 
 		//cd
@@ -2059,12 +2095,12 @@ void TestB()
 			if (ID >= 0) {
 				printf("delete successfully!\n");
 				DeleteFile(ID);
-				for (int i = 0; i < blocks[currentFileID].childrenNumber; i++) {
+				for (int i = 0; i < blocks[currentFileID].childrenNum; i++) {
 					if (ID == blocks[currentFileID].children[i]) {
-						for (int j = i + 1; j < blocks[currentFileID].childrenNumber; j++) {
+						for (int j = i + 1; j < blocks[currentFileID].childrenNum; j++) {
 							blocks[currentFileID].children[i] = blocks[currentFileID].children[j];
 						}
-						blocks[currentFileID].childrenNumber--;
+						blocks[currentFileID].childrenNum--;
 						break;
 					}
 				}
@@ -2121,6 +2157,7 @@ PUBLIC void panic(const char *fmt, ...)
 	/* should never arrive here */
 	__asm__ __volatile__("ud2");
 }
+
 
 
 

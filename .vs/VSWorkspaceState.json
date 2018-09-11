@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\include",
     "\\kernel"
   ],
-  "SelectedNode": "\\include\\math.h",
+  "SelectedNode": "\\kernel\\main.c",
   "PreviewInSolutionExplorer": false
 }
